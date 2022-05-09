@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class Flight implements Comparable<Flight>{
 
-	//Attributes (Private)
+	// Attributes (Private)
 	private String id;
 	private String origin;
 	private String destination;
@@ -15,11 +15,11 @@ public class Flight implements Comparable<Flight>{
 	private String model;
 	private List<Passenger> passengers;
 	
-	//Builder C1: Does not receive parameters and create a Flight object
+	// Builder C1: Does not receive parameters and create a Flight object
 	public Flight() {
 	}
 	
-	//Builder C2: Receive some parameters excluding id and passengers list and create a Flight object
+	// Builder C2: Receive some parameters excluding id and passengers list and create a Flight object
 	public Flight(String origin, String destination, String airline, String model) {
 		this.origin = origin;
 		this.destination = destination;
@@ -27,7 +27,7 @@ public class Flight implements Comparable<Flight>{
 		this.model = model;
 	}
 	
-	//Getters - Setters: Methods for all the attributes
+	// Getters - Setters: Methods for all the attributes
 	public String getId() {
 		return id;
 	}
@@ -68,7 +68,7 @@ public class Flight implements Comparable<Flight>{
 		this.model = model;
 	}
 
-	//Getters - Setters: Methods for the list attribute
+	// Getters - Setters: Methods for the list attribute
 	public List<Passenger> getPassengers() {
 		return passengers;
 	}
@@ -103,7 +103,7 @@ public class Flight implements Comparable<Flight>{
 		this.passengers.remove(p);
 	}
 
-	//Equality criteria: All the flights are different from each others depending on the id
+	// Equality criteria: All the flights are different from each others depending on the id
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -121,13 +121,13 @@ public class Flight implements Comparable<Flight>{
 		return Objects.equals(id, other.id);
 	}
 
-	//Sorting criteria: All the flights are sorted depending on the id
+	// Sorting criteria: All the flights are sorted depending on the id
 	@Override
 	public int compareTo(Flight f) {
 		return this.id.compareTo(f.id);
 	}
 
-	//String format: Each flight is represented with all the values
+	// String format: Each flight is represented with all the values
 	@Override
 	public String toString() {
 		String list = this.passengers.stream()

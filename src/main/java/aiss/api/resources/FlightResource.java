@@ -49,7 +49,7 @@ public class FlightResource {
 	
 	@GET
 	@Produces("application/json")
-	public Collection<Flight> getAll(@QueryParam("order") String order, @QueryParam("isEmpty") Boolean isEmpty, @QueryParam("name") String name) 
+	public Collection<Flight> getAllFlights(@QueryParam("order") String order, @QueryParam("isEmpty") Boolean isEmpty, @QueryParam("name") String name) 
 	{
 		List<Flight> result = new ArrayList<>();
 		
@@ -66,20 +66,28 @@ public class FlightResource {
 		if (order != null) {
 			if (order.equals("origin")) {
 				Collections.sort(result,Comparator.comparing(Flight::getOrigin));
+			
 			} else if (order.equals("-origin")) {
 				Collections.sort(result, Comparator.comparing(Flight::getOrigin).reversed());
+			
 			} else if (order.equals("destination")) {
 				Collections.sort(result, Comparator.comparing(Flight::getDestination));
+			
 			} else if (order.equals("-destination")) {
 				Collections.sort(result, Comparator.comparing(Flight::getDestination).reversed());
+			
 			} else if (order.equals("airline")) {
 				Collections.sort(result, Comparator.comparing(Flight::getAirline));
+			
 			} else if (order.equals("-airline")) {
 				Collections.sort(result, Comparator.comparing(Flight::getAirline).reversed());
+			
 			} else if (order.equals("model")) {
 				Collections.sort(result, Comparator.comparing(Flight::getModel));
+			
 			} else if (order.equals("-model")) {
 				Collections.sort(result, Comparator.comparing(Flight::getModel).reversed());
+			
 			} else {
 				throw new BadRequestException("The order parameter must be 'origin' , '-origin' , 'destination' , '-destination' ,"
 						+ " 'airline' , '-airline' , 'model' , '-model'.");
@@ -91,34 +99,43 @@ public class FlightResource {
 	@GET
 	@Path("/{id}")
 	@Produces("application/json")
-	public Flight get(@PathParam("id") String id)
+	public Flight getFlight(@PathParam("id") String id)
 	{
-		Flight list = repository.getFlight(id);
+		Flight flight = repository.getFlight(id);
 		
-		if (list == null) {
-			throw new NotFoundException("The flight with id="+ id +" was not found");			
+		// If the flight does not exist it throws a 404 Error
+		if (flight == null) {
+			throw new NotFoundException("The flight with id = "+ id +" was not found");		
 		}
-		return list;
+		
+		return flight;
 	}
 	
 	@POST
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response addFlight(@Context UriInfo uriInfo, Flight flight) {
+		
+		// All the fields of the flight must not be empty or null, in other case it throws a 400 Error
+		// The field passengers from the flight must be empty, in other case it throws a 400 Error
 		if (flight.getOrigin() == null || "".equals(flight.getOrigin())) {
 			throw new BadRequestException("The origin of the flight must not be null");
+		
 		} else if (flight.getDestination() == null || "".equals(flight.getDestination())) {
 			throw new BadRequestException("The destination of the flight must not be null");
+		
 		} else if (flight.getAirline() == null || "".equals(flight.getAirline())) {
 			throw new BadRequestException("The airline of the flight must not be null");
+		
 		} else if (flight.getModel() == null || "".equals(flight.getModel())) {
 			throw new BadRequestException("The model of the flight must not be null");
-		}
-			
-		if (flight.getPassengers() != null) {
+		
+		} else if (flight.getPassengers() != null) {
 			throw new BadRequestException("The passengers property is not editable.");	
+		
+		} else {
+			repository.addFlight(flight);
 		}
-		repository.addFlight(flight);
 
 		// Builds the response. Returns the flight the has just been added.
 		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "get");
@@ -131,12 +148,14 @@ public class FlightResource {
 	
 	@PUT
 	@Consumes("application/json")
-	public Response updatePlaylist(Flight flight) {
+	public Response updateFlight(Flight flight) {
 		Flight oldflight = repository.getFlight(flight.getId());
-		if (oldflight == null) {
-			throw new NotFoundException("The flight with id="+ flight.getId() +" was not found");			
-		}
 		
+		// If that flight does not exist it throws a 404 Error
+		if (oldflight == null) {
+			throw new NotFoundException("The flight with id = "+ flight.getId() +" was not found");			
+		}
+		// If the field of the new flight contain any passenger it throws a 400 Error
 		if (flight.getPassengers() != null) {
 			throw new BadRequestException("The passengers property is not editable.");
 		}
@@ -157,43 +176,75 @@ public class FlightResource {
 		if (flight.getModel() != null) {
 			oldflight.setModel(flight.getModel());
 		}
-			
+		
+		// Finally, it creates a 204 Success status
 		return Response.noContent().build();
 	}
 	
 	@DELETE
 	@Path("/{id}")
 	public Response removeFlight(@PathParam("id") String id) {
-		Flight toberemoved = repository.getFlight(id);
-		if (toberemoved == null) {
-			throw new NotFoundException("The flight with id="+ id +" was not found");		
+		
+		Flight flight = repository.getFlight(id);
+		
+		// If the flight does not exist it throws a 404 Error
+		if (flight == null) {
+			throw new NotFoundException("The flight with id = "+ id +" was not found");		
 		} else {
 			repository.deleteFlight(id);
 		}
+		
+		// Finally, it creates a 204 Success status
 		return Response.noContent().build();
+	}
+	
+	@GET
+	@Path("/{flightId}/{passengerId}")
+	@Produces("application/json")
+	public Passenger getPassengerFromAFlight(@PathParam("flightId") String flightId, @PathParam("passengerId") String passengerId) {
+		Flight flight = repository.getFlight(flightId);
+		Passenger passenger = repository.getPassenger(passengerId);
+		
+		// If the flight or the passenger do not exist it throws a 404 Error
+		// If the flight do not contains on the passenger it throws a 400 Error
+		if (flight == null) {
+			throw new NotFoundException("The flight with id = " + flightId + " was not found");
+		
+		} else if (passenger == null) {
+			throw new NotFoundException("The passenger with id = " + passengerId + " was not found");
+		
+		} else if (flight.getPassenger(passengerId) == null) {
+			throw new BadRequestException("The passenger with id = " + passengerId + " is not included on the flight with id = " + flightId);
+		
+		} else {
+			repository.removePassenger(flightId, passengerId);	
+		}
+		
+		return flight.getPassenger(passengerId);
 	}
 	
 	@POST	
 	@Path("/{flightId}/{passengerId}")
-	@Consumes("text/plain")
 	@Produces("application/json")
-	public Response addPassenger(@Context UriInfo uriInfo,@PathParam("flightId") String flightId, @PathParam("passengerId") String passengerId) {				
+	public Response addPassengerToAFlight(@Context UriInfo uriInfo,@PathParam("flightId") String flightId, @PathParam("passengerId") String passengerId) {				
+		
 		Flight flight = repository.getFlight(flightId);
 		Passenger passenger = repository.getPassenger(passengerId);
 		
+		// If the flight or the passenger do not exist it throws a 404 Error
+		// If the flight do not contains on the passenger it throws a 400 Error
 		if (flight == null) {
-			throw new NotFoundException("The flight with id=" + flightId + " was not found");
+			throw new NotFoundException("The flight with id = " + flightId + " was not found");
+		
+		} else if (passenger == null) {
+			throw new NotFoundException("The passenger with id = " + passengerId + " was not found");
+		
+		} else if (flight.getPassenger(passengerId) != null) {
+			throw new BadRequestException("The passenger with id = " + passengerId + " is already included on the flight with id = " + flightId);
+		
+		} else {
+			repository.addPassenger(flightId, passengerId);		
 		}
-			
-		if (passenger == null) {
-			throw new NotFoundException("The passenger with id=" + passengerId + " was not found");
-		}
-			
-		if (flight.getPassenger(passengerId) != null) {
-			throw new BadRequestException("The passenger is already included in the flight.");
-		}
-			
-		repository.addPassenger(flightId, passengerId);		
 
 		// Builds the response
 		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "get");
@@ -206,20 +257,27 @@ public class FlightResource {
 	
 	@DELETE
 	@Path("/{flightId}/{passengerId}")
-	public Response removePassenger(@PathParam("flightId") String flightId, @PathParam("passengerId") String passengerId) {
+	public Response removePassengerFromAFlight(@PathParam("flightId") String flightId, @PathParam("passengerId") String passengerId) {
+		
 		Flight flight = repository.getFlight(flightId);
 		Passenger passenger = repository.getPassenger(passengerId);
 		
+		// If the flight or the passenger do not exist it throws a 404 Error
+		// If the flight do not contains on the passenger it throws a 400 Error
 		if (flight == null) {
-			throw new NotFoundException("The flight with id=" + flightId + " was not found");
-		}
-			
-		if (passenger == null) {
-			throw new NotFoundException("The passenger with id=" + passengerId + " was not found");
+			throw new NotFoundException("The flight with id = " + flightId + " was not found");
+		
+		} else if (passenger == null) {
+			throw new NotFoundException("The passenger with id = " + passengerId + " was not found");
+		
+		} else if (flight.getPassenger(passengerId) == null) {
+			throw new BadRequestException("The passenger with id = " + passengerId + " is not included on the flight with id = " + flightId);
+		
+		} else {
+			repository.removePassenger(flightId, passengerId);	
 		}
 		
-		repository.removePassenger(flightId, passengerId);		
-		
+		// Finally, it creates a 204 Success status
 		return Response.noContent().build();
 	}
 }

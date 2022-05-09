@@ -48,7 +48,8 @@ public class PassengerResource {
 	
 	@GET
 	@Produces("application/json")
-	public Collection<Passenger> getAll(@QueryParam("q") String q, @QueryParam("order") String order, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset) {
+	public Collection<Passenger> getAllPassengers(@QueryParam("q") String q, @QueryParam("order") String order, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset) {
+		
 		List<Passenger> result = new ArrayList<>(), passengers = repository.getAllPassengers().stream().collect(Collectors.toList());
 		int start = offset == null ? 0: offset-1;
 		int end = limit == null ? passengers.size(): start  + limit;
@@ -83,11 +84,15 @@ public class PassengerResource {
 	@GET
 	@Path("/{id}")
 	@Produces("application/json")
-	public Passenger get(@PathParam("id") String passengerId) {
+	public Passenger getPassenger(@PathParam("id") String passengerId) {
+		
 		Passenger passenger = repository.getPassenger(passengerId);
+		
+		// If the passenger does not exist it throws a 404 Error
 		if (passenger == null) {
-			throw new NotFoundException("The passenger with id="+ passengerId +" was not found");
+			throw new NotFoundException("The passenger with id = " + passengerId + " was not found");
 		}
+		
 		return passenger;
 	}
 	
@@ -95,10 +100,13 @@ public class PassengerResource {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response addPassenger(@Context UriInfo uriInfo, Passenger passenger) {
+		
+		// If the passenger contains a name null or empty it throws a 404 Error
 		if (passenger.getName() == null || "".equals(passenger.getName())) {
 			throw new NotFoundException("The name of the passenger must not be null");
+		} else {
+			repository.addPassenger(passenger);
 		}
-		repository.addPassenger(passenger);
 		
 		// Builds the response. Returns the flight the has just been added.
 		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "get");
@@ -114,37 +122,43 @@ public class PassengerResource {
 	public Response updatePassenger(Passenger passenger) {
 		
 		Passenger oldpassenger = repository.getPassenger(passenger.getId());
+		
+		// If the passenger does not exist it throws a 404 Error
 		if (oldpassenger == null) {
 			throw new NotFoundException("The passenger with id="+ passenger.getId() +" was not found");			
+		} else {
+			// Update name
+			if (passenger.getName() != null) {
+				oldpassenger.setName(passenger.getName());
+			}
+			// Update surname
+			if (passenger.getSurname() != null) {
+				oldpassenger.setSurname(passenger.getSurname());
+			}
+			// Update age
+			if (passenger.getAge() != null) {
+				oldpassenger.setAge(passenger.getAge());
+			}
 		}
 		
-		// Update name
-		if (passenger.getName() != null) {
-			oldpassenger.setName(passenger.getName());
-		}
-			
-		// Update surname
-		if (passenger.getSurname() != null) {
-			oldpassenger.setSurname(passenger.getSurname());
-		}
-			
-		// Update age
-		if (passenger.getAge() != null) {
-			oldpassenger.setAge(passenger.getAge());
-		}
-			
+		// Finally, it creates a 204 Success status
 		return Response.noContent().build();
 	}
 	
 	@DELETE
 	@Path("/{id}")
 	public Response removePassenger(@PathParam("id") String passengerId) {
-		Passenger toberemoved = repository.getPassenger(passengerId);
-		if (toberemoved == null) {
-			throw new NotFoundException("The passenger with id="+ passengerId +" was not found");
+		
+		Passenger passenger = repository.getPassenger(passengerId);
+		
+		// If the passenger does not exist it throws a 404 Error
+		if (passenger == null) {
+			throw new NotFoundException("The passenger with id = " + passengerId + " was not found");
 		} else {
 			repository.deletePassenger(passengerId);
 		}
+		
+		// Finally, it creates a 204 Success status
 		return Response.noContent().build();
 	}
 	

@@ -13,7 +13,8 @@ public class MapFlightRepository implements FlightRepository {
 	public Map<String, Flight> flightMap;
 	public Map<String, Passenger> passengerMap;
 	private static MapFlightRepository instance = null;
-	private int index = 0;	// Index to create flights and passengers' identifiers.		
+	private int indexFlight = 0;	// Index to create flights' identifiers.	
+	private int indexPassenger = 0;	// Index to create passengers' identifiers.	
 	
 	public static MapFlightRepository getInstance() {
 		if (instance == null) {
@@ -127,11 +128,11 @@ public class MapFlightRepository implements FlightRepository {
 		addPassenger(f3.getId(), p23.getId());
 		addPassenger(f3.getId(), p24.getId());
 		addPassenger(f3.getId(), p25.getId());
-		addPassenger(f3.getId(), p26.getId());
-		addPassenger(f3.getId(), p27.getId());
-		addPassenger(f3.getId(), p28.getId());
-		addPassenger(f3.getId(), p29.getId());
-		addPassenger(f3.getId(), p30.getId());
+		addPassenger(f4.getId(), p26.getId());
+		addPassenger(f4.getId(), p27.getId());
+		addPassenger(f4.getId(), p28.getId());
+		addPassenger(f5.getId(), p29.getId());
+		addPassenger(f5.getId(), p30.getId());
 	}
 	
 	//Passengers: All the operations applied for Passenger type
@@ -147,7 +148,7 @@ public class MapFlightRepository implements FlightRepository {
 
 	@Override
 	public void addPassenger(Passenger p) {
-		String id = "p" + index++;
+		String id = "p" + indexPassenger++;
 		p.setId(id);
 		passengerMap.put(id, p);
 	}
@@ -175,7 +176,7 @@ public class MapFlightRepository implements FlightRepository {
 
 	@Override
 	public void addFlight(Flight f) {
-		String id = "f" + index++;
+		String id = "f" + indexFlight++;
 		f.setId(id);
 		flightMap.put(id, f);
 	}

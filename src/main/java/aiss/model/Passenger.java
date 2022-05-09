@@ -4,24 +4,24 @@ import java.util.Objects;
 
 public class Passenger implements Comparable<Passenger>{
 
-	//Attributes (Private)
+	// Attributes (Private)
 	private String id;
 	private String name;
 	private String surname;
 	private String age;
 	
-	//Builder C1: Does not receive parameters and create a Passenger object
+	// Builder C1: Does not receive parameters and create a Passenger object
 	public Passenger() {
 	}
 	
-	//Builder C2: Receive some parameters excluding id and create a Passenger object
+	// Builder C2: Receive some parameters excluding id and create a Passenger object
 	public Passenger(String name, String surnames, String age) {
 		this.name = name;
 		this.surname = surnames;
 		this.age = age;
 	}
 
-	//Getters - Setters: Methods for all the attributes
+	// Getters - Setters: Methods for all the attributes
 	public String getId() {
 		return id;
 	}
@@ -54,7 +54,7 @@ public class Passenger implements Comparable<Passenger>{
 		this.age = age;
 	}
 	
-	//Equality criteria: All the passengers are different from each others depending on the id
+	// Equality criteria: All the passengers are different from each others depending on the id
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -73,13 +73,13 @@ public class Passenger implements Comparable<Passenger>{
 		return Objects.equals(id, other.id);
 	}
 	
-	//Sorting criteria: All the passengers are sorted depending on the id
+	// Sorting criteria: All the passengers are sorted depending on the id
 	@Override
 	public int compareTo(Passenger p) {
 		return this.id.compareTo(p.id);
 	}
 
-	//String format: Each passenger is represented with all the values
+	// String format: Each passenger is represented with all the values
 	@Override
 	public String toString() {
 		return String.format("(%s, %s, %s, %s)", id, name, surname, age);
