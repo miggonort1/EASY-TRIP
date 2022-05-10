@@ -132,10 +132,10 @@ public class FlightResource {
 		
 		} else if (flight.getPassengers() != null) {
 			throw new BadRequestException("The passengers property is not editable.");	
+		} 
 		
-		} else {
-			repository.addFlight(flight);
-		}
+		repository.addFlight(flight);
+
 
 		// Builds the response. Returns the flight the has just been added.
 		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "get");
@@ -215,9 +215,6 @@ public class FlightResource {
 		
 		} else if (flight.getPassenger(passengerId) == null) {
 			throw new BadRequestException("The passenger with id = " + passengerId + " is not included on the flight with id = " + flightId);
-		
-		} else {
-			repository.removePassenger(flightId, passengerId);	
 		}
 		
 		return flight.getPassenger(passengerId);
@@ -225,6 +222,7 @@ public class FlightResource {
 	
 	@POST	
 	@Path("/{flightId}/{passengerId}")
+	//@Consumes("text/plain")
 	@Produces("application/json")
 	public Response addPassengerToAFlight(@Context UriInfo uriInfo,@PathParam("flightId") String flightId, @PathParam("passengerId") String passengerId) {				
 		
@@ -241,10 +239,8 @@ public class FlightResource {
 		
 		} else if (flight.getPassenger(passengerId) != null) {
 			throw new BadRequestException("The passenger with id = " + passengerId + " is already included on the flight with id = " + flightId);
-		
-		} else {
-			repository.addPassenger(flightId, passengerId);		
-		}
+		} 
+		repository.addPassenger(flightId, passengerId);		
 
 		// Builds the response
 		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "get");

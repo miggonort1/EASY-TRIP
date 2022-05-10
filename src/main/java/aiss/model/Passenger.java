@@ -20,6 +20,14 @@ public class Passenger implements Comparable<Passenger>{
 		this.surname = surnames;
 		this.age = age;
 	}
+	
+	// Builder C3: Receive all the parameters and create a Passenger object
+	public Passenger(String id, String name, String surnames, String age) {
+		this.id = id;
+		this.name = name;
+		this.surname = surnames;
+		this.age = age;
+	}
 
 	// Getters - Setters: Methods for all the attributes
 	public String getId() {

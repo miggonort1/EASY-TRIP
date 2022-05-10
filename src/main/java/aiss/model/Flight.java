@@ -72,10 +72,6 @@ public class Flight implements Comparable<Flight>{
 	public List<Passenger> getPassengers() {
 		return passengers;
 	}
-
-	public void setPassengers(List<Passenger> passengers) {
-		this.passengers = passengers;
-	}
 	
 	public Passenger getPassenger(String id) {
 		if (this.passengers == null) {
@@ -101,6 +97,12 @@ public class Flight implements Comparable<Flight>{
 	
 	public void deletePassenger(Passenger p) {
 		this.passengers.remove(p);
+	}
+	
+	public void deletePassenger(String passengerId) {
+		Passenger p = getPassenger(passengerId);
+		if (p != null)
+			this.passengers.remove(p);
 	}
 
 	// Equality criteria: All the flights are different from each others depending on the id

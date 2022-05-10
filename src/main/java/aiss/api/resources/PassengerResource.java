@@ -54,13 +54,18 @@ public class PassengerResource {
 		int start = offset == null ? 0: offset-1;
 		int end = limit == null ? passengers.size(): start  + limit;
 		
-		for (int i = start; i < end; i++) {
-			if (passengers.get(i).getName().contains(q) 
-					|| passengers.get(i).getSurname().contains(q) 
-					|| passengers.get(i).getAge().contains(q)) {
-				result.add(passengers.get(i));
-			}	
+		if (q != null) {
+			for (int i = start; i < end; i++) {
+				if (passengers.get(i).getName().contains(q) 
+						|| passengers.get(i).getSurname().contains(q) 
+						|| passengers.get(i).getAge().contains(q)) {
+					result.add(passengers.get(i));
+				}	
+			}
+		} else {
+			result = passengers;
 		}
+
 		
 		if (order != null) {
 			if (order.equals("name")) {
@@ -104,11 +109,11 @@ public class PassengerResource {
 		// If the passenger contains a name null or empty it throws a 404 Error
 		if (passenger.getName() == null || "".equals(passenger.getName())) {
 			throw new NotFoundException("The name of the passenger must not be null");
-		} else {
-			repository.addPassenger(passenger);
-		}
+		} 
 		
-		// Builds the response. Returns the flight the has just been added.
+		repository.addPassenger(passenger);
+
+		// Builds the response. Returns the passenger that has just been added.
 		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "get");
 		URI uri = ub.build(passenger.getId());
 		ResponseBuilder resp = Response.created(uri);
