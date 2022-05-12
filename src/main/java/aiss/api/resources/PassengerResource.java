@@ -166,8 +166,8 @@ public class PassengerResource {
 	}
 	
 	@DELETE
-	@Path("/{id}")
-	public Response removePassenger(@PathParam("id") String passengerId) {
+	@Path("/{passengerId}")
+	public Response removePassenger(@PathParam("passengerId") String passengerId) {
 		
 		// Check if the passenger exists on the repository
 		if (!repository.getAllPassengers().stream().anyMatch(x -> x.getId().equals(passengerId))) {
