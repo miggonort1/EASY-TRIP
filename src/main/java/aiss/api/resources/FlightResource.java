@@ -242,7 +242,6 @@ public class FlightResource {
 		return resp.build();
 	}
 	
-	
 	@DELETE
 	@Path("/{flightId}/{passengerId}")
 	public Response removePassengerFromAFlight(@PathParam("flightId") String flightId, @PathParam("passengerId") String passengerId) {
