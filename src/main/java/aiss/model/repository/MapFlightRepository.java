@@ -27,7 +27,7 @@ public class MapFlightRepository implements FlightRepository {
 		passengerMap = new HashMap<String, Passenger>();
 		
 		//Create passengers
-		Passenger p1 = new Passenger("p1","Roberto", "García Martínes", "23");
+		Passenger p1 = new Passenger("p1","Roberto", "García Martínez", "23");
 		addPassenger(p1);
 		Passenger p2 = new Passenger("p2","Lucía", "López Vladic", "33");
 		addPassenger(p2);
