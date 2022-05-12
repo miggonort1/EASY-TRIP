@@ -10,9 +10,8 @@ public class Passenger implements Comparable<Passenger>{
 	private String surname;
 	private String age;
 	
-	// Builder C1: Does not receive parameters and create a Passenger object
-	public Passenger() {
-	}
+	// Builder C1: Do not receive any parameters and create a Passenger object
+	public Passenger() {}
 	
 	// Builder C2: Receive some parameters excluding id and create a Passenger object
 	public Passenger(String name, String surnames, String age) {

@@ -21,8 +21,8 @@ public interface FlightRepository {
 	public void updateFlight(Flight f);
 	public void deleteFlight(String flightId);
 	
-	public Collection<Passenger> getAll(String flightId);
-	public void addPassenger(String flightId, String passengerId);
-	public void removePassenger(String flightId, String passengerId); 
+	public Collection<Passenger> getAllPassengersFromAFlight(String flightId);
+	public void addPassengerToAFlight(String flightId, String passengerId);
+	public void removePassengerFromAFlight(String flightId, String passengerId); 
 
 }

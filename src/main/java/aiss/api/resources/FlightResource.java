@@ -97,18 +97,16 @@ public class FlightResource {
 	}
 	
 	@GET
-	@Path("/{id}")
+	@Path("/{flightId}")
 	@Produces("application/json")
-	public Flight getFlight(@PathParam("id") String id)
-	{
-		Flight flight = repository.getFlight(id);
+	public Flight getFlight(@PathParam("flightId") String flightId) {	
 		
-		// If the flight does not exist it throws a 404 Error
-		if (flight == null) {
-			throw new NotFoundException("The flight with id = "+ id +" was not found");		
+		// Check if the flight exists on the repository
+		if (!repository.getAllFlights().stream().anyMatch(x -> x.getId().equals(flightId))) {
+			throw new NotFoundException("The flight with the id = " + flightId + " does not exist on the repository");
 		}
 		
-		return flight;
+		return repository.getFlight(flightId);
 	}
 	
 	@POST
@@ -116,83 +114,67 @@ public class FlightResource {
 	@Produces("application/json")
 	public Response addFlight(@Context UriInfo uriInfo, Flight flight) {
 		
-		// All the fields of the flight must not be empty or null, in other case it throws a 400 Error
-		// The field passengers from the flight must be empty, in other case it throws a 400 Error
-		if (flight.getOrigin() == null || "".equals(flight.getOrigin())) {
-			throw new BadRequestException("The origin of the flight must not be null");
+		// If the flight contains any wrong field it throws a 400 Error
+		if (flight.getId() == null || "".equals(flight.getId()) || !flight.getId().startsWith("f") || !flight.getId().substring(1).chars().allMatch(Character::isDigit)) {
+			throw new BadRequestException("The id of the flight must follow the pattern fX (Example: f10) and must not be null or empty");
+		} else if (flight.getOrigin() == null || "".equals(flight.getOrigin()) || !flight.getOrigin().replace(" ", "").chars().allMatch(Character::isLetter)) {
+			throw new BadRequestException("The origin of the flight must contains letters and must not be null or empty");
+		} else if (flight.getDestination() == null || "".equals(flight.getDestination()) || !flight.getDestination().replace(" ", "").chars().allMatch(Character::isLetter)) {
+			throw new BadRequestException("The destination of the flight must contains letters and must not be null or empty");
+		} else if (flight.getAirline() == null || "".equals(flight.getAirline()) || !flight.getDestination().replace(" ", "").chars().allMatch(Character::isLetter)) {
+			throw new BadRequestException("The airline of the flight must contains letters and must not be null or empty");
+		}
 		
-		} else if (flight.getDestination() == null || "".equals(flight.getDestination())) {
-			throw new BadRequestException("The destination of the flight must not be null");
-		
-		} else if (flight.getAirline() == null || "".equals(flight.getAirline())) {
-			throw new BadRequestException("The airline of the flight must not be null");
-		
-		} else if (flight.getModel() == null || "".equals(flight.getModel())) {
-			throw new BadRequestException("The model of the flight must not be null");
-		
-		} else if (flight.getPassengers() != null) {
-			throw new BadRequestException("The passengers property is not editable.");	
-		} 
+		// Check if the flight exists on the repository
+		if (repository.getAllFlights().stream().anyMatch(x -> x.getId().equals(flight.getId()))) {
+			throw new NotFoundException("The flight to be added with the id = " + flight.getId() + " already exist on the repository");
+		}
 		
 		repository.addFlight(flight);
 
-
-		// Builds the response. Returns the flight the has just been added.
-		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "get");
-		URI uri = ub.build(flight.getId());
-		ResponseBuilder resp = Response.created(uri);
-		resp.entity(flight);			
-		return resp.build();
+		// Builds the response. Returns the flight the has just been added.			
+		return Response.noContent().build();
 	}
 
 	
 	@PUT
 	@Consumes("application/json")
 	public Response updateFlight(Flight flight) {
-		Flight oldflight = repository.getFlight(flight.getId());
 		
-		// If that flight does not exist it throws a 404 Error
-		if (oldflight == null) {
-			throw new NotFoundException("The flight with id = "+ flight.getId() +" was not found");			
+		// If the flight contains any wrong field it throws a 400 Error
+		if (flight.getId() == null || "".equals(flight.getId()) || !flight.getId().startsWith("f") || !flight.getId().substring(1).chars().allMatch(Character::isDigit)) {
+			throw new BadRequestException("The id of the flight must follow the pattern fX (Example: f10) and must not be null or empty");
+		} else if (flight.getOrigin() == null || "".equals(flight.getOrigin()) || !flight.getOrigin().replace(" ", "").chars().allMatch(Character::isLetter)) {
+			throw new BadRequestException("The origin of the flight must contains letters and must not be null or empty");
+		} else if (flight.getDestination() == null || "".equals(flight.getDestination()) || !flight.getDestination().replace(" ", "").chars().allMatch(Character::isLetter)) {
+			throw new BadRequestException("The destination of the flight must contains letters and must not be null or empty");
+		} else if (flight.getAirline() == null || "".equals(flight.getAirline()) || !flight.getDestination().replace(" ", "").chars().allMatch(Character::isLetter)) {
+			throw new BadRequestException("The airline of the flight must contains letters and must not be null or empty");
 		}
-		// If the field of the new flight contain any passenger it throws a 400 Error
-		if (flight.getPassengers() != null) {
-			throw new BadRequestException("The passengers property is not editable.");
+		
+		// Check if the flight exists on the repository
+		if (!repository.getAllFlights().stream().anyMatch(x -> x.getId().equals(flight.getId()))) {
+			throw new NotFoundException("The flight to be updated with the id = " + flight.getId() + " does not exist on the repository");
+		} else if (!(flight.getPassengers().size() == repository.getFlight(flight.getId()).getPassengers().size())) {
+			throw new BadRequestException("The flight to be updated can not modify passengers field");
 		}
-			
-		// Update origin
-		if (flight.getOrigin() != null) {
-			oldflight.setOrigin(flight.getOrigin());
-		}
-		// Update destination
-		if (flight.getDestination() != null) {
-			oldflight.setDestination(flight.getDestination());
-		}
-		// Update airline
-		if (flight.getAirline() != null) {
-			oldflight.setAirline(flight.getAirline());
-		}
-		// Update model
-		if (flight.getModel() != null) {
-			oldflight.setModel(flight.getModel());
-		}
+		
+		repository.updateFlight(flight);
 		
 		// Finally, it creates a 204 Success status
 		return Response.noContent().build();
 	}
 	
 	@DELETE
-	@Path("/{id}")
-	public Response removeFlight(@PathParam("id") String id) {
+	@Path("/{flightId}")
+	public Response removeFlight(@PathParam("flightId") String flightId) {
 		
-		Flight flight = repository.getFlight(id);
-		
-		// If the flight does not exist it throws a 404 Error
-		if (flight == null) {
-			throw new NotFoundException("The flight with id = "+ id +" was not found");		
-		} else {
-			repository.deleteFlight(id);
+		// Check if the flight exists on the repository
+		if (!repository.getAllFlights().stream().anyMatch(x -> x.getId().equals(flightId))) {
+			throw new NotFoundException("The flight to be removed with the id = " + flightId + " does not exist on the repository");
 		}
+			
+		repository.deleteFlight(flightId);
 		
 		// Finally, it creates a 204 Success status
 		return Response.noContent().build();
@@ -202,52 +184,52 @@ public class FlightResource {
 	@Path("/{flightId}/{passengerId}")
 	@Produces("application/json")
 	public Passenger getPassengerFromAFlight(@PathParam("flightId") String flightId, @PathParam("passengerId") String passengerId) {
-		Flight flight = repository.getFlight(flightId);
-		Passenger passenger = repository.getPassenger(passengerId);
 		
-		// If the flight or the passenger do not exist it throws a 404 Error
-		// If the flight do not contains on the passenger it throws a 400 Error
-		if (flight == null) {
-			throw new NotFoundException("The flight with id = " + flightId + " was not found");
-		
-		} else if (passenger == null) {
-			throw new NotFoundException("The passenger with id = " + passengerId + " was not found");
-		
-		} else if (flight.getPassenger(passengerId) == null) {
-			throw new BadRequestException("The passenger with id = " + passengerId + " is not included on the flight with id = " + flightId);
+		// Check if the flight exists on the repository
+		if (!repository.getAllFlights().stream().anyMatch(x -> x.getId().equals(flightId))) {
+			throw new NotFoundException("The flight with the id = " + flightId + " does not exist on the repository");
 		}
 		
-		return flight.getPassenger(passengerId);
+		// Check if the passenger exists on the repository
+		if (!repository.getAllPassengers().stream().anyMatch(x -> x.getId().equals(passengerId))) {
+			throw new NotFoundException("The passenger with the id = " + passengerId + " does not exist on the repository");
+		}
+		
+		//Check if the flight contains the passenger on the repository
+		if (!repository.getFlight(flightId).getPassengers().contains(repository.getPassenger(passengerId))) {
+			throw new NotFoundException("The passenger with the id = " + passengerId + " is not on the flight with id = " + flightId);
+		}
+		
+		return repository.getFlight(flightId).getPassenger(passengerId);
 	}
 	
 	@POST	
 	@Path("/{flightId}/{passengerId}")
-	//@Consumes("text/plain")
+	@Consumes("text/plain")
 	@Produces("application/json")
 	public Response addPassengerToAFlight(@Context UriInfo uriInfo,@PathParam("flightId") String flightId, @PathParam("passengerId") String passengerId) {				
 		
-		Flight flight = repository.getFlight(flightId);
-		Passenger passenger = repository.getPassenger(passengerId);
+		// Check if the flight exists on the repository
+		if (!repository.getAllFlights().stream().anyMatch(x -> x.getId().equals(flightId))) {
+			throw new NotFoundException("The flight with the id = " + flightId + " does not exist on the repository");
+		}
 		
-		// If the flight or the passenger do not exist it throws a 404 Error
-		// If the flight do not contains on the passenger it throws a 400 Error
-		if (flight == null) {
-			throw new NotFoundException("The flight with id = " + flightId + " was not found");
+		// Check if the passenger exists on the repository
+		if (!repository.getAllPassengers().stream().anyMatch(x -> x.getId().equals(passengerId))) {
+			throw new NotFoundException("The passenger to be added with the id = " + passengerId + " does not exist on the repository");
+		}
 		
-		} else if (passenger == null) {
-			throw new NotFoundException("The passenger with id = " + passengerId + " was not found");
+		//Check if the flight contains the passenger on the repository
+		if (repository.getAllPassengersFromAFlight(flightId).stream().anyMatch(x -> x.getId().equals(passengerId))) {
+			throw new NotFoundException("The passenger to be added with the id = " + passengerId + " is already on the flight with id = " + flightId);
+		} else if (repository.getAllFlights().stream().anyMatch(x -> !x.getId().equals(flightId) && x.getPassengers().contains(repository.getPassenger(passengerId)))) {
+			throw new NotFoundException("The passenger to be added with the id = " + passengerId + " is already on another flight");
+		}
 		
-		} else if (flight.getPassenger(passengerId) != null) {
-			throw new BadRequestException("The passenger with id = " + passengerId + " is already included on the flight with id = " + flightId);
-		} 
-		repository.addPassenger(flightId, passengerId);		
+		repository.addPassengerToAFlight(flightId, passengerId);		
 
-		// Builds the response
-		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "get");
-		URI uri = ub.build(flightId);
-		ResponseBuilder resp = Response.created(uri);
-		resp.entity(flight);			
-		return resp.build();
+		// Builds the response			
+		return Response.noContent().build();
 	}
 	
 	
@@ -255,24 +237,23 @@ public class FlightResource {
 	@Path("/{flightId}/{passengerId}")
 	public Response removePassengerFromAFlight(@PathParam("flightId") String flightId, @PathParam("passengerId") String passengerId) {
 		
-		Flight flight = repository.getFlight(flightId);
-		Passenger passenger = repository.getPassenger(passengerId);
-		
-		// If the flight or the passenger do not exist it throws a 404 Error
-		// If the flight do not contains on the passenger it throws a 400 Error
-		if (flight == null) {
-			throw new NotFoundException("The flight with id = " + flightId + " was not found");
-		
-		} else if (passenger == null) {
-			throw new NotFoundException("The passenger with id = " + passengerId + " was not found");
-		
-		} else if (flight.getPassenger(passengerId) == null) {
-			throw new BadRequestException("The passenger with id = " + passengerId + " is not included on the flight with id = " + flightId);
-		
-		} else {
-			repository.removePassenger(flightId, passengerId);	
+		// Check if the flight exists on the repository
+		if (!repository.getAllFlights().stream().anyMatch(x -> x.getId().equals(flightId))) {
+			throw new NotFoundException("The flight with the id = " + flightId + " does not exist on the repository");
 		}
 		
+		// Check if the passenger exists on the repository
+		if (!repository.getAllPassengers().stream().anyMatch(x -> x.getId().equals(passengerId))) {
+			throw new NotFoundException("The passenger to be removed with the id = " + passengerId + " does not exist on the repository");
+		}
+		
+		//Check if the flight contains the passenger on the repository
+		if (!repository.getFlight(flightId).getPassengers().contains(repository.getPassenger(passengerId))) {
+			throw new NotFoundException("The passenger to be removed with the id = " + passengerId + " is not on the flight with id = " + flightId);
+		}
+			
+		repository.removePassengerFromAFlight(flightId, passengerId);	
+
 		// Finally, it creates a 204 Success status
 		return Response.noContent().build();
 	}

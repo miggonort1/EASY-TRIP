@@ -1,8 +1,8 @@
 package aiss.model.repository;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import aiss.model.Flight;
 import aiss.model.Passenger;
@@ -10,11 +10,9 @@ import aiss.model.Passenger;
 public class MapFlightRepository implements FlightRepository {
 
 	//Attributes
+	private static MapFlightRepository instance = null;
 	public Map<String, Flight> flightMap;
 	public Map<String, Passenger> passengerMap;
-	private static MapFlightRepository instance = null;
-	private int indexFlight = 0;	// Index to create flights' identifiers.	
-	private int indexPassenger = 0;	// Index to create passengers' identifiers.	
 	
 	public static MapFlightRepository getInstance() {
 		if (instance == null) {
@@ -25,8 +23,8 @@ public class MapFlightRepository implements FlightRepository {
 	}
 	
 	public void init() {
-		flightMap = new TreeMap<String, Flight>();
-		passengerMap = new TreeMap<String, Passenger>();
+		flightMap = new HashMap<String, Flight>();
+		passengerMap = new HashMap<String, Passenger>();
 		
 		//Create passengers
 		Passenger p1 = new Passenger("p1","Roberto", "García Martínes", "23");
@@ -91,68 +89,71 @@ public class MapFlightRepository implements FlightRepository {
 		addPassenger(p30);
 		
 		//Create flights
-		Flight f1 = new Flight("Madrid", "Barcelona", "Iberia", "Airbus A330-300");
+		Flight f1 = new Flight("f1", "Madrid", "Barcelona", "Iberia", "Airbus A330-300");
 		addFlight(f1);
-		Flight f2 = new Flight("Sevilla", "Valencia", "Vueling", "Airbus A320-214");
+		Flight f2 = new Flight("f2", "Sevilla", "Valencia", "Vueling", "Airbus A320-214");
 		addFlight(f2);
-		Flight f3 = new Flight("Madrid", "Lisboa", "Plus Ultra", "Airbus A340-313");
+		Flight f3 = new Flight("f3", "Madrid", "Lisboa", "Plus Ultra", "Airbus A340-313");
 		addFlight(f3);
-		Flight f4 = new Flight("Paris", "Roma", "Air Europa", "Airbus A330-300");
+		Flight f4 = new Flight("f4", "Paris", "Roma", "Air Europa", "Airbus A330-300");
 		addFlight(f4);
-		Flight f5 = new Flight("Asturias", "Vigo", "Iberia", "Airbus A330-300");
+		Flight f5 = new Flight("f5", "Asturias", "Vigo", "Iberia", "Airbus A330-300");
 		addFlight(f5);
 		
 		//Add passengers to flights
-		addPassenger(f1.getId(), p1.getId());
-		addPassenger(f1.getId(), p2.getId());
-		addPassenger(f1.getId(), p3.getId());
-		addPassenger(f1.getId(), p4.getId());
-		addPassenger(f1.getId(), p5.getId());
-		addPassenger(f1.getId(), p6.getId());
-		addPassenger(f1.getId(), p7.getId());
-		addPassenger(f1.getId(), p8.getId());
-		addPassenger(f1.getId(), p9.getId());
-		addPassenger(f1.getId(), p10.getId());
-		addPassenger(f1.getId(), p11.getId());
-		addPassenger(f1.getId(), p12.getId());
-		addPassenger(f2.getId(), p13.getId());
-		addPassenger(f2.getId(), p14.getId());
-		addPassenger(f2.getId(), p15.getId());
-		addPassenger(f2.getId(), p16.getId());
-		addPassenger(f2.getId(), p17.getId());
-		addPassenger(f2.getId(), p18.getId());
-		addPassenger(f2.getId(), p19.getId());
-		addPassenger(f3.getId(), p20.getId());
-		addPassenger(f3.getId(), p21.getId());
-		addPassenger(f3.getId(), p22.getId());
-		addPassenger(f3.getId(), p23.getId());
-		addPassenger(f3.getId(), p24.getId());
-		addPassenger(f3.getId(), p25.getId());
-		addPassenger(f4.getId(), p26.getId());
-		addPassenger(f4.getId(), p27.getId());
-		addPassenger(f4.getId(), p28.getId());
-		addPassenger(f5.getId(), p29.getId());
-		addPassenger(f5.getId(), p30.getId());
+		addPassengerToAFlight(f1.getId(), p1.getId());
+		addPassengerToAFlight(f1.getId(), p2.getId());
+		addPassengerToAFlight(f1.getId(), p3.getId());
+		addPassengerToAFlight(f1.getId(), p4.getId());
+		addPassengerToAFlight(f1.getId(), p5.getId());
+		addPassengerToAFlight(f1.getId(), p6.getId());
+		addPassengerToAFlight(f1.getId(), p7.getId());
+		addPassengerToAFlight(f1.getId(), p8.getId());
+		addPassengerToAFlight(f1.getId(), p9.getId());
+		addPassengerToAFlight(f1.getId(), p10.getId());
+		addPassengerToAFlight(f1.getId(), p11.getId());
+		addPassengerToAFlight(f1.getId(), p12.getId());
+		addPassengerToAFlight(f2.getId(), p13.getId());
+		addPassengerToAFlight(f2.getId(), p14.getId());
+		addPassengerToAFlight(f2.getId(), p15.getId());
+		addPassengerToAFlight(f2.getId(), p16.getId());
+		addPassengerToAFlight(f2.getId(), p17.getId());
+		addPassengerToAFlight(f2.getId(), p18.getId());
+		addPassengerToAFlight(f2.getId(), p19.getId());
+		addPassengerToAFlight(f3.getId(), p20.getId());
+		addPassengerToAFlight(f3.getId(), p21.getId());
+		addPassengerToAFlight(f3.getId(), p22.getId());
+		addPassengerToAFlight(f3.getId(), p23.getId());
+		addPassengerToAFlight(f3.getId(), p24.getId());
+		addPassengerToAFlight(f3.getId(), p25.getId());
+		addPassengerToAFlight(f4.getId(), p26.getId());
+		addPassengerToAFlight(f4.getId(), p27.getId());
+		addPassengerToAFlight(f4.getId(), p28.getId());
+		addPassengerToAFlight(f5.getId(), p29.getId());
+		addPassengerToAFlight(f5.getId(), p30.getId());
 	}
 	
 	//Passengers: All the operations applied for Passenger type
+	
+	// Get all the passengers from the passengerMap
 	@Override
 	public Collection<Passenger> getAllPassengers() {
 		return this.passengerMap.values();
 	}
 
+	// Get a specific passenger from the passengerMap
 	@Override
 	public Passenger getPassenger(String passengerId) {
 		return this.passengerMap.get(passengerId);
 	}
 
+	// Add a specific passenger to the passengerMap
 	@Override
 	public void addPassenger(Passenger p) {
-		String id = "p" + indexPassenger++;
-		p.setId(id);
-		passengerMap.put(id, p);
+		passengerMap.put(p.getId(), p);
 	}
 
+	// Update the passenger on the passengerMap (the passenger is updated on the existing flights)
 	@Override
 	public void updatePassenger(Passenger p) {
 		Passenger passenger = passengerMap.get(p.getId());
@@ -161,54 +162,68 @@ public class MapFlightRepository implements FlightRepository {
 		passenger.setAge(p.getAge());
 	}
 
+	// Remove the passenger on the passengerMap (requires removing the passenger on the existing flights)
 	@Override
 	public void deletePassenger(String passengerId) {
+		Passenger p = this.passengerMap.get(passengerId);
 		passengerMap.remove(passengerId);
+		
+		// Remove existing passenger on the existing flights
+		this.flightMap.entrySet().stream()
+			.filter(x -> x.getValue().getPassengers().contains(p))
+			.forEach(x -> x.getValue().deletePassenger(p.getId()));
 	}
 
 	//Flights: All the operations applied for Flight type
+	
+	// Get all the flights from the flightMap
 	@Override
 	public Collection<Flight> getAllFlights() {
 		return this.flightMap.values();
 	}
 
+	// Get a specific flight from the flightMap
 	@Override
 	public Flight getFlight(String flightId) {
 		return this.flightMap.get(flightId);
 	}
 
+	// Add a specific flight to the fligthMap
 	@Override
 	public void addFlight(Flight f) {
-		String id = "f" + indexFlight++;
-		f.setId(id);
-		flightMap.put(id, f);
-	}
-
-	@Override
-	public void updateFlight(Flight f) {
 		flightMap.put(f.getId(), f);
 	}
 
+	// Update an existing flight on the flightMap
+	@Override
+	public void updateFlight(Flight f) {
+		flightMap.replace(f.getId(), f);
+	}
+
+	// Remove an existing flight on the flightMap
 	@Override
 	public void deleteFlight(String flightId) {
 		flightMap.remove(flightId);
 	}
 
+	// Get all the passenger from the specific flight on the flightMap
 	@Override
-	public Collection<Passenger> getAll(String flightId) {
+	public Collection<Passenger> getAllPassengersFromAFlight(String flightId) {
 		return flightMap.get(flightId).getPassengers();
 	}
 
+	// Add a specific passenger to the specific flight on the flightMap
 	@Override
-	public void addPassenger(String flightId, String passengerId) {
+	public void addPassengerToAFlight(String flightId, String passengerId) {
 		Flight flight = flightMap.get(flightId);
 		Passenger passenger = passengerMap.get(passengerId);
 		flight.addPassenger(passenger);
 		flightMap.replace(flight.getId(), flight);
 	}
 
+	// Remove a specific passenger on the specific flight on the flightMap
 	@Override
-	public void removePassenger(String flightId, String passengerId) {
+	public void removePassengerFromAFlight(String flightId, String passengerId) {
 		Flight flight = flightMap.get(flightId);
 		Passenger passenger = passengerMap.get(passengerId);
 		flight.deletePassenger(passenger);

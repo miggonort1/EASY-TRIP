@@ -23,6 +23,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.NotFoundException;
 
 import aiss.model.Passenger;
@@ -87,18 +88,16 @@ public class PassengerResource {
 	
 	
 	@GET
-	@Path("/{id}")
+	@Path("/{passengerId}")
 	@Produces("application/json")
-	public Passenger getPassenger(@PathParam("id") String passengerId) {
+	public Passenger getPassenger(@PathParam("passengerId") String passengerId) {
 		
-		Passenger passenger = repository.getPassenger(passengerId);
-		
-		// If the passenger does not exist it throws a 404 Error
-		if (passenger == null) {
-			throw new NotFoundException("The passenger with id = " + passengerId + " was not found");
+		// Check if the passenger exists on the repository
+		if (!repository.getAllPassengers().stream().anyMatch(x -> x.getId().equals(passengerId))) {
+			throw new NotFoundException("The passenger with the id = " + passengerId + " does not exist on the repository");
 		}
 		
-		return passenger;
+		return repository.getPassenger(passengerId);
 	}
 	
 	@POST
@@ -106,19 +105,26 @@ public class PassengerResource {
 	@Produces("application/json")
 	public Response addPassenger(@Context UriInfo uriInfo, Passenger passenger) {
 		
-		// If the passenger contains a name null or empty it throws a 404 Error
-		if (passenger.getName() == null || "".equals(passenger.getName())) {
-			throw new NotFoundException("The name of the passenger must not be null");
-		} 
+		// If the passenger contains any wrong field it throws a 400 Error
+		if (passenger.getId() == null || "".equals(passenger.getId()) || !passenger.getId().startsWith("p") || !passenger.getId().substring(1).chars().allMatch(Character::isDigit)) {
+			throw new BadRequestException("The id of the passenger must follow the pattern pX (Example: p10) and must not be null or empty");
+		} else if (passenger.getName() == null || "".equals(passenger.getName()) || !passenger.getName().replace(" ", "").chars().allMatch(Character::isLetter)) {
+			throw new BadRequestException("The name of the passenger must contains letters and must not be null or empty");
+		} else if (passenger.getSurname() == null || "".equals(passenger.getSurname()) || !passenger.getSurname().replace(" ", "").chars().allMatch(Character::isLetter)) {
+			throw new BadRequestException("The surname of the passenger must contains letters and must not be null or empty");
+		} else if (passenger.getAge() == null || "".equals(passenger.getAge()) || !passenger.getAge().chars().allMatch(Character::isDigit)) {
+			throw new BadRequestException("The age of the passenger must be numerical and must not be null or empty");
+		}
+		
+		// Check if the passenger exists on the repository
+		if (repository.getAllPassengers().stream().anyMatch(x -> x.getId().equals(passenger.getId()))) {
+			throw new BadRequestException("The passenger to be added with the id = " + passenger.getId() + " already exist on the repository");
+		}
 		
 		repository.addPassenger(passenger);
 
-		// Builds the response. Returns the passenger that has just been added.
-		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "get");
-		URI uri = ub.build(passenger.getId());
-		ResponseBuilder resp = Response.created(uri);
-		resp.entity(passenger);			
-		return resp.build();
+		// Builds the response. Returns the passenger that has just been added.		
+		return Response.noContent().build();
 	}
 	
 	
@@ -126,25 +132,23 @@ public class PassengerResource {
 	@Consumes("application/json")
 	public Response updatePassenger(Passenger passenger) {
 		
-		Passenger oldpassenger = repository.getPassenger(passenger.getId());
-		
-		// If the passenger does not exist it throws a 404 Error
-		if (oldpassenger == null) {
-			throw new NotFoundException("The passenger with id="+ passenger.getId() +" was not found");			
-		} else {
-			// Update name
-			if (passenger.getName() != null) {
-				oldpassenger.setName(passenger.getName());
-			}
-			// Update surname
-			if (passenger.getSurname() != null) {
-				oldpassenger.setSurname(passenger.getSurname());
-			}
-			// Update age
-			if (passenger.getAge() != null) {
-				oldpassenger.setAge(passenger.getAge());
-			}
+		// If the passenger contains any wrong field it throws a 400 Error
+		if (passenger.getId() == null || "".equals(passenger.getId()) || !passenger.getId().startsWith("p") || !passenger.getId().substring(1).chars().allMatch(Character::isDigit)) {
+			throw new BadRequestException("The id of the passenger must follow the pattern pX (Example: p10) and must not be null or empty");
+		} else if (passenger.getName() == null || "".equals(passenger.getName()) || !passenger.getName().replace(" ", "").chars().allMatch(Character::isLetter)) {
+			throw new BadRequestException("The name of the passenger must contains letters and must not be null or empty");
+		} else if (passenger.getSurname() == null || "".equals(passenger.getSurname()) || !passenger.getSurname().replace(" ", "").chars().allMatch(Character::isLetter)) {
+			throw new BadRequestException("The surname of the passenger must contains letters and must not be null or empty");
+		} else if (passenger.getAge() == null || "".equals(passenger.getAge()) || !passenger.getAge().chars().allMatch(Character::isDigit)) {
+			throw new BadRequestException("The age of the passenger must be numerical and must not be null or empty");
 		}
+		
+		// Check if the passenger exists on the repository
+		if (!repository.getAllPassengers().contains(passenger)) {
+			throw new NotFoundException("The passenger to be updated with the id = " + passenger.getId() + " does not exist on the repository");
+		}
+		
+		repository.updatePassenger(passenger);
 		
 		// Finally, it creates a 204 Success status
 		return Response.noContent().build();
@@ -154,14 +158,12 @@ public class PassengerResource {
 	@Path("/{id}")
 	public Response removePassenger(@PathParam("id") String passengerId) {
 		
-		Passenger passenger = repository.getPassenger(passengerId);
-		
-		// If the passenger does not exist it throws a 404 Error
-		if (passenger == null) {
-			throw new NotFoundException("The passenger with id = " + passengerId + " was not found");
-		} else {
-			repository.deletePassenger(passengerId);
+		// Check if the passenger exists on the repository
+		if (!repository.getAllPassengers().stream().anyMatch(x -> x.getId().equals(passengerId))) {
+			throw new NotFoundException("The passenger to be removed with the id = " + passengerId + " does not exist on the repository");
 		}
+		
+		repository.deletePassenger(passengerId);
 		
 		// Finally, it creates a 204 Success status
 		return Response.noContent().build();

@@ -15,9 +15,8 @@ public class Flight implements Comparable<Flight>{
 	private String model;
 	private List<Passenger> passengers;
 	
-	// Builder C1: Does not receive parameters and create a Flight object
-	public Flight() {
-	}
+	// Builder C1: Do not receive any parameters and create a Passenger object
+	public Flight() {}
 	
 	// Builder C2: Receive some parameters excluding id and passengers list and create a Flight object
 	public Flight(String origin, String destination, String airline, String model) {
@@ -25,6 +24,17 @@ public class Flight implements Comparable<Flight>{
 		this.destination = destination;
 		this.airline = airline;
 		this.model = model;
+		this.passengers = new ArrayList<>();
+	}
+	
+	// Builder C3: Receive all the parameters and create a Flight object
+	public Flight(String id, String origin, String destination, String airline, String model) {
+		this.id = id;
+		this.origin = origin;
+		this.destination = destination;
+		this.airline = airline;
+		this.model = model;
+		this.passengers = new ArrayList<>();
 	}
 	
 	// Getters - Setters: Methods for all the attributes
@@ -70,39 +80,37 @@ public class Flight implements Comparable<Flight>{
 
 	// Getters - Setters: Methods for the list attribute
 	public List<Passenger> getPassengers() {
-		return passengers;
+		return this.passengers;
 	}
 	
 	public Passenger getPassenger(String id) {
-		if (this.passengers == null) {
-			return null;
-		}
-
-		Passenger passenger = null;
-		for(Passenger p: this.passengers) {
-			if (p.getId().equals(id)) {
-				passenger = p;
-				break;
-			}
-		}
-		return passenger;
+		return this.passengers.stream()
+				.filter(p -> p.getId().equals(id))
+				.findAny()
+				.get();
 	}
 	
 	public void addPassenger(Passenger p) {
-		if (this.passengers == null) {
+		if (!this.passengers.contains(p)) {
+			this.passengers.add(p);
+		} else if (this.passengers == null) {
 			this.passengers = new ArrayList<Passenger>();
+			this.passengers.add(p);
 		}
-		this.passengers.add(p);
 	}
 	
 	public void deletePassenger(Passenger p) {
-		this.passengers.remove(p);
+		if (this.passengers.contains(p)) {
+			this.passengers.remove(p);
+		}
 	}
 	
 	public void deletePassenger(String passengerId) {
 		Passenger p = getPassenger(passengerId);
-		if (p != null)
+		if (this.passengers.contains(p)) {
 			this.passengers.remove(p);
+		}
+			
 	}
 
 	// Equality criteria: All the flights are different from each others depending on the id
