@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers: 
-  - url: 'https://easy-trip-350018.ew.r.appspot.com/' 
+  - url: 'https://easy-trip-350018.ew.r.appspot.com/api/v1' 
 info:
   description: EASY TRIP is an API REST Project made with Java, the purpose of this api is to facilitate the creation and use of flights and passengers.
   version: 1.0.0
