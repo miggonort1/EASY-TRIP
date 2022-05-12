@@ -123,8 +123,13 @@ public class PassengerResource {
 		
 		repository.addPassenger(passenger);
 
-		// Builds the response. Returns the passenger that has just been added.		
-		return Response.noContent().build();
+		// Builds the response. Returns the passenger that has just been added.	
+		Passenger p = repository.getPassenger(passenger.getId());
+		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "getPassenger");
+		URI uri = ub.build(p.getId());
+		ResponseBuilder resp = Response.created(uri);
+		resp.entity(p);
+		return resp.build();
 	}
 	
 	

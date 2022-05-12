@@ -49,8 +49,7 @@ public class FlightResource {
 	
 	@GET
 	@Produces("application/json")
-	public Collection<Flight> getAllFlights(@QueryParam("order") String order, @QueryParam("isEmpty") Boolean isEmpty, @QueryParam("name") String name) 
-	{
+	public Collection<Flight> getAllFlights(@QueryParam("order") String order, @QueryParam("isEmpty") Boolean isEmpty, @QueryParam("name") String name) {
 		List<Flight> result = new ArrayList<>();
 		
 		for (Flight flight: repository.getAllFlights()) {
@@ -132,8 +131,13 @@ public class FlightResource {
 		
 		repository.addFlight(flight);
 
-		// Builds the response. Returns the flight the has just been added.			
-		return Response.noContent().build();
+		// Builds the response. Returns the flight that has just been added.	
+		Flight f = repository.getFlight(flight.getId());
+		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "getFlight");
+		URI uri = ub.build(f.getId());
+		ResponseBuilder resp = Response.created(uri);
+		resp.entity(f);
+		return resp.build();
 	}
 
 	
@@ -228,8 +232,13 @@ public class FlightResource {
 		
 		repository.addPassengerToAFlight(flightId, passengerId);		
 
-		// Builds the response			
-		return Response.noContent().build();
+		// Builds the response. Returns the flight that has just been added.
+		Flight f = repository.getFlight(flightId);
+		UriBuilder ub = uriInfo.getAbsolutePathBuilder().path(this.getClass(), "getFlight");
+		URI uri = ub.build(f.getId());
+		ResponseBuilder resp = Response.created(uri);
+		resp.entity(f);			
+		return resp.build();
 	}
 	
 	
