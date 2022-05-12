@@ -134,7 +134,9 @@ public class Flight implements Comparable<Flight>{
 	// Sorting criteria: All the flights are sorted depending on the id
 	@Override
 	public int compareTo(Flight f) {
-		return this.id.compareTo(f.id);
+		Integer a = Integer.parseInt(this.id.substring(1));
+		Integer b = Integer.parseInt(f.getId().substring(1));
+		return a.compareTo(b);
 	}
 
 	// String format: Each flight is represented with all the values

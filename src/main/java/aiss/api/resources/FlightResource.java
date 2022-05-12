@@ -49,47 +49,48 @@ public class FlightResource {
 	
 	@GET
 	@Produces("application/json")
-	public Collection<Flight> getAllFlights(@QueryParam("order") String order, @QueryParam("isEmpty") Boolean isEmpty, @QueryParam("name") String name) {
+	public Collection<Flight> getAllFlights(@QueryParam("order") String order, @QueryParam("isEmpty") Boolean isEmpty, 
+			@QueryParam("origin") String origin, @QueryParam("destination") String destination, @QueryParam("airline") String airline) {
+		
 		List<Flight> result = new ArrayList<>();
 		
 		for (Flight flight: repository.getAllFlights()) {
-			if (name == null || flight.getOrigin().equals(name)) {
-				if (isEmpty == null
-						|| (isEmpty && (flight.getPassengers() == null || flight.getPassengers().size() == 0))
-						|| (!isEmpty && (flight.getPassengers() != null || flight.getPassengers().size() > 0))) {
-					result.add(flight);
-				}		
-			}
+			if (origin == null || flight.getOrigin().toUpperCase().equals(origin.toUpperCase())) {
+				if (destination == null || flight.getDestination().toUpperCase().equals(destination.toUpperCase())) {
+					if (airline == null || flight.getAirline().toUpperCase().equals(airline.toUpperCase())) {
+						if (isEmpty == null
+								|| (isEmpty && (flight.getPassengers() == null || flight.getPassengers().size() == 0))
+								|| (!isEmpty && (flight.getPassengers() != null || flight.getPassengers().size() > 0))) {
+							result.add(flight);
+						}
+					} 
+				} 
+			} 
+		}
+		
+		if (result.size() == 0) {
+			throw new BadRequestException("Any of the given params does not fit with any of the existing flights");
 		}
 		
 		if (order != null) {
 			if (order.equals("origin")) {
 				Collections.sort(result,Comparator.comparing(Flight::getOrigin));
-			
 			} else if (order.equals("-origin")) {
 				Collections.sort(result, Comparator.comparing(Flight::getOrigin).reversed());
-			
 			} else if (order.equals("destination")) {
 				Collections.sort(result, Comparator.comparing(Flight::getDestination));
-			
 			} else if (order.equals("-destination")) {
 				Collections.sort(result, Comparator.comparing(Flight::getDestination).reversed());
-			
 			} else if (order.equals("airline")) {
 				Collections.sort(result, Comparator.comparing(Flight::getAirline));
-			
 			} else if (order.equals("-airline")) {
 				Collections.sort(result, Comparator.comparing(Flight::getAirline).reversed());
-			
 			} else if (order.equals("model")) {
 				Collections.sort(result, Comparator.comparing(Flight::getModel));
-			
 			} else if (order.equals("-model")) {
 				Collections.sort(result, Comparator.comparing(Flight::getModel).reversed());
-			
 			} else {
-				throw new BadRequestException("The order parameter must be 'origin' , '-origin' , 'destination' , '-destination' ,"
-						+ " 'airline' , '-airline' , 'model' , '-model'.");
+				throw new BadRequestException("The order parameter must be 'origin' , '-origin' , 'destination' , '-destination' , 'airline' , '-airline' , 'model' or '-model'.");
 			}
 		}
 		return result;

@@ -83,7 +83,9 @@ public class Passenger implements Comparable<Passenger>{
 	// Sorting criteria: All the passengers are sorted depending on the id
 	@Override
 	public int compareTo(Passenger p) {
-		return this.id.compareTo(p.id);
+		Integer a = Integer.parseInt(this.id.substring(1));
+		Integer b = Integer.parseInt(p.getId().substring(1));
+		return a.compareTo(b);
 	}
 
 	// String format: Each passenger is represented with all the values

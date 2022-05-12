@@ -61,12 +61,16 @@ public class PassengerResource {
 						|| passengers.get(i).getSurname().contains(q) 
 						|| passengers.get(i).getAge().contains(q)) {
 					result.add(passengers.get(i));
-				}	
+				}		
 			}
 		} else {
 			result = passengers;
 		}
 
+		
+		if (result.size() == 0) {
+			throw new BadRequestException(limit + " " + offset + "Any of the given params does not fit with any of the existing passengers");
+		}
 		
 		if (order != null) {
 			if (order.equals("name")) {
@@ -78,9 +82,11 @@ public class PassengerResource {
 			} else if (order.equals("-surname")) {
 				Collections.sort(result, Comparator.comparing(Passenger::getSurname).reversed());
 			} else if (order.equals("age")) {
-				Collections.sort(result, Comparator.comparing(Passenger::getAge));
+				Collections.sort(result, Comparator.comparing(x -> Integer.parseInt(x.getAge())));
 			} else if (order.equals("-age")) {
-				Collections.sort(result, Comparator.comparing(Passenger::getAge).reversed());
+				Collections.sort(result, Comparator.comparing(x -> - Integer.parseInt(x.getAge())));
+			} else {
+				throw new BadRequestException("The order parameter must be 'name' , '-name' , 'surname' , '-surname' , 'age' or '-age'.");
 			}
 		}
 		return result;
