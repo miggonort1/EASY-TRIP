@@ -92,7 +92,6 @@ public class PassengerResource {
 		return result;
 	}
 	
-	
 	@GET
 	@Path("/{passengerId}")
 	@Produces("application/json")
