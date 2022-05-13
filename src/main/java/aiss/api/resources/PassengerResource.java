@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.NotFoundException;
 
+import aiss.model.Gender;
 import aiss.model.Passenger;
 import aiss.model.repository.FlightRepository;
 import aiss.model.repository.MapFlightRepository;
@@ -58,8 +59,7 @@ public class PassengerResource {
 		if (q != null) {
 			for (int i = start; i < end; i++) {
 				if (passengers.get(i).getName().contains(q) 
-						|| passengers.get(i).getSurname().contains(q) 
-						|| passengers.get(i).getAge().contains(q)) {
+						|| passengers.get(i).getSurname().contains(q)) {
 					result.add(passengers.get(i));
 				}		
 			}
@@ -82,9 +82,9 @@ public class PassengerResource {
 			} else if (order.equals("-surname")) {
 				Collections.sort(result, Comparator.comparing(Passenger::getSurname).reversed());
 			} else if (order.equals("age")) {
-				Collections.sort(result, Comparator.comparing(x -> Integer.parseInt(x.getAge())));
+				Collections.sort(result, Comparator.comparing(Passenger::getAge));
 			} else if (order.equals("-age")) {
-				Collections.sort(result, Comparator.comparing(x -> - Integer.parseInt(x.getAge())));
+				Collections.sort(result, Comparator.comparing(Passenger::getAge).reversed());
 			} else {
 				throw new BadRequestException("The order parameter must be 'name' , '-name' , 'surname' , '-surname' , 'age' or '-age'.");
 			}
@@ -117,8 +117,10 @@ public class PassengerResource {
 			throw new BadRequestException("The name of the passenger must contains letters and must not be null or empty");
 		} else if (passenger.getSurname() == null || "".equals(passenger.getSurname()) || !passenger.getSurname().replace(" ", "").chars().allMatch(Character::isLetter)) {
 			throw new BadRequestException("The surname of the passenger must contains letters and must not be null or empty");
-		} else if (passenger.getAge() == null || "".equals(passenger.getAge()) || !passenger.getAge().chars().allMatch(Character::isDigit)) {
-			throw new BadRequestException("The age of the passenger must be numerical and must not be null or empty");
+		} else if (passenger.getGender() == null || !passenger.getGender().equals(Gender.MAN) || !passenger.getGender().equals(Gender.WOMAN) || !passenger.getGender().equals(Gender.OTHER)) {
+			throw new BadRequestException("The gender of the passenger must be MAN, WOMAN or OTHER");
+		} else if (passenger.getAge() == null || passenger.getAge() <= 0) {
+			throw new BadRequestException("The age of the passenger must be positive");
 		}
 		
 		// Check if the passenger exists on the repository
@@ -149,8 +151,10 @@ public class PassengerResource {
 			throw new BadRequestException("The name of the passenger must contains letters and must not be null or empty");
 		} else if (passenger.getSurname() == null || "".equals(passenger.getSurname()) || !passenger.getSurname().replace(" ", "").chars().allMatch(Character::isLetter)) {
 			throw new BadRequestException("The surname of the passenger must contains letters and must not be null or empty");
-		} else if (passenger.getAge() == null || "".equals(passenger.getAge()) || !passenger.getAge().chars().allMatch(Character::isDigit)) {
-			throw new BadRequestException("The age of the passenger must be numerical and must not be null or empty");
+		} else if (passenger.getGender() == null || !passenger.getGender().equals(Gender.MAN) || !passenger.getGender().equals(Gender.WOMAN) || !passenger.getGender().equals(Gender.OTHER)) {
+			throw new BadRequestException("The gender of the passenger must be MAN, WOMAN or OTHER");
+		} else if (passenger.getAge() <= 0) {
+			throw new BadRequestException("The age of the passenger must be positive");
 		}
 		
 		// Check if the passenger exists on the repository

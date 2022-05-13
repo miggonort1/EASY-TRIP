@@ -11,29 +11,27 @@ public class Flight implements Comparable<Flight>{
 	private String id;
 	private String origin;
 	private String destination;
+	private Integer originDate;
+	private Integer destinationDate;
+	private Double price;
 	private String airline;
 	private String model;
+	private Integer numMaxPassengers;
 	private List<Passenger> passengers;
 	
-	// Builder C1: Do not receive any parameters and create a Passenger object
 	public Flight() {}
 	
-	// Builder C2: Receive some parameters excluding id and passengers list and create a Flight object
-	public Flight(String origin, String destination, String airline, String model) {
-		this.origin = origin;
-		this.destination = destination;
-		this.airline = airline;
-		this.model = model;
-		this.passengers = new ArrayList<>();
-	}
-	
-	// Builder C3: Receive all the parameters and create a Flight object
-	public Flight(String id, String origin, String destination, String airline, String model) {
+	// Builder C1: Receive all the parameters and create a Flight object
+	public Flight(String id, String origin, String destination, Integer originDate, Integer destinationDate, Double price, String airline, String model, Integer numMaxPassengers) {
 		this.id = id;
 		this.origin = origin;
 		this.destination = destination;
+		this.originDate = originDate;
+		this.destinationDate = destinationDate;
+		this.price = price;
 		this.airline = airline;
 		this.model = model;
+		this.numMaxPassengers = numMaxPassengers;
 		this.passengers = new ArrayList<>();
 	}
 	
@@ -61,6 +59,30 @@ public class Flight implements Comparable<Flight>{
 	public void setDestination(String destination) {
 		this.destination = destination;
 	}
+	
+	public Integer getOriginDate() {
+		return originDate;
+	}
+
+	public void setOriginDate(Integer originDate) {
+		this.originDate = originDate;
+	}
+
+	public Integer getDestinationDate() {
+		return destinationDate;
+	}
+
+	public void setDestinationDate(Integer destinationDate) {
+		this.destinationDate = destinationDate;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
 
 	public String getAirline() {
 		return airline;
@@ -76,6 +98,15 @@ public class Flight implements Comparable<Flight>{
 
 	public void setModel(String model) {
 		this.model = model;
+	}
+	
+
+	public Integer getNumMaxPassengers() {
+		return numMaxPassengers;
+	}
+
+	public void setNumMaxPassengers(Integer numMaxPassengers) {
+		this.numMaxPassengers = numMaxPassengers;
 	}
 
 	// Getters - Setters: Methods for the list attribute
@@ -145,7 +176,7 @@ public class Flight implements Comparable<Flight>{
 		String list = this.passengers.stream()
 				.map(Passenger::toString)
 				.collect(Collectors.joining("\n - "));
-		return String.format("%s, %s, %s, %s, %s :\n%s", id, origin, destination, airline, model, list);
+		return String.format("%s, %s, %s, %d, %d, %f, %s, %s, %d :\n%s", id, origin, destination, originDate, destinationDate, price, airline, model, numMaxPassengers, list);
 	}
 	
 }

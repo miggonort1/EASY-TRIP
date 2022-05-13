@@ -8,23 +8,17 @@ public class Passenger implements Comparable<Passenger>{
 	private String id;
 	private String name;
 	private String surname;
-	private String age;
+	private Gender gender;
+	private Integer age;
 	
-	// Builder C1: Do not receive any parameters and create a Passenger object
 	public Passenger() {}
 	
-	// Builder C2: Receive some parameters excluding id and create a Passenger object
-	public Passenger(String name, String surnames, String age) {
-		this.name = name;
-		this.surname = surnames;
-		this.age = age;
-	}
-	
-	// Builder C3: Receive all the parameters and create a Passenger object
-	public Passenger(String id, String name, String surnames, String age) {
+	// Builder C1: Receive all the parameters and create a Passenger object
+	public Passenger(String id, String name, String surnames, Gender gender, Integer age) {
 		this.id = id;
 		this.name = name;
 		this.surname = surnames;
+		this.gender = gender;
 		this.age = age;
 	}
 
@@ -53,14 +47,22 @@ public class Passenger implements Comparable<Passenger>{
 		this.surname = surname;
 	}
 
-	public String getAge() {
+	public Integer getAge() {
 		return age;
 	}
 
-	public void setAge(String age) {
+	public void setAge(Integer age) {
 		this.age = age;
 	}
 	
+	public Gender getGender() {
+		return gender;
+	}
+
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
+
 	// Equality criteria: All the passengers are different from each others depending on the id
 	@Override
 	public int hashCode() {
@@ -91,7 +93,7 @@ public class Passenger implements Comparable<Passenger>{
 	// String format: Each passenger is represented with all the values
 	@Override
 	public String toString() {
-		return String.format("(%s, %s, %s, %s)", id, name, surname, age);
+		return String.format("(%s, %s, %s, %s, %s)", id, name, surname, gender, age);
 	}
 	
 }

@@ -50,18 +50,20 @@ public class FlightResource {
 	@GET
 	@Produces("application/json")
 	public Collection<Flight> getAllFlights(@QueryParam("order") String order, @QueryParam("isEmpty") Boolean isEmpty, 
-			@QueryParam("origin") String origin, @QueryParam("destination") String destination, @QueryParam("airline") String airline) {
+			@QueryParam("origin") String origin, @QueryParam("destination") String destination, @QueryParam("airline") String airline,@QueryParam("price") Double price) {
 		
 		List<Flight> result = new ArrayList<>();
 		
 		for (Flight flight: repository.getAllFlights()) {
 			if (origin == null || flight.getOrigin().toUpperCase().equals(origin.toUpperCase())) {
 				if (destination == null || flight.getDestination().toUpperCase().equals(destination.toUpperCase())) {
-					if (airline == null || flight.getAirline().toUpperCase().equals(airline.toUpperCase())) {
-						if (isEmpty == null
-								|| (isEmpty && (flight.getPassengers() == null || flight.getPassengers().size() == 0))
-								|| (!isEmpty && (flight.getPassengers() != null || flight.getPassengers().size() > 0))) {
-							result.add(flight);
+					if (price == null || flight.getPrice().equals(price)) {
+						if (airline == null || flight.getAirline().toUpperCase().equals(airline.toUpperCase())) {
+							if (isEmpty == null
+									|| (isEmpty && (flight.getPassengers() == null || flight.getPassengers().size() == 0))
+									|| (!isEmpty && (flight.getPassengers() != null || flight.getPassengers().size() > 0))) {
+								result.add(flight);
+							}
 						}
 					} 
 				} 
@@ -81,6 +83,18 @@ public class FlightResource {
 				Collections.sort(result, Comparator.comparing(Flight::getDestination));
 			} else if (order.equals("-destination")) {
 				Collections.sort(result, Comparator.comparing(Flight::getDestination).reversed());
+			} else if (order.equals("originDate")) {
+				Collections.sort(result, Comparator.comparing(Flight::getOriginDate));
+			} else if (order.equals("-originDate")) {
+				Collections.sort(result, Comparator.comparing(Flight::getOriginDate).reversed());
+			} else if (order.equals("destinationDate")) {
+				Collections.sort(result, Comparator.comparing(Flight::getDestinationDate));
+			} else if (order.equals("-destinationDate")) {
+				Collections.sort(result, Comparator.comparing(Flight::getDestinationDate).reversed());
+			}  else if (order.equals("price")) {
+				Collections.sort(result, Comparator.comparing(Flight::getPrice));
+			} else if (order.equals("-price")) {
+				Collections.sort(result, Comparator.comparing(Flight::getPrice).reversed());
 			} else if (order.equals("airline")) {
 				Collections.sort(result, Comparator.comparing(Flight::getAirline));
 			} else if (order.equals("-airline")) {
@@ -89,8 +103,12 @@ public class FlightResource {
 				Collections.sort(result, Comparator.comparing(Flight::getModel));
 			} else if (order.equals("-model")) {
 				Collections.sort(result, Comparator.comparing(Flight::getModel).reversed());
+			} else if (order.equals("numMaxPassengers")) {
+				Collections.sort(result, Comparator.comparing(Flight::getNumMaxPassengers));
+			} else if (order.equals("-numMaxPassengers")) {
+				Collections.sort(result, Comparator.comparing(Flight::getNumMaxPassengers).reversed());
 			} else {
-				throw new BadRequestException("The order parameter must be 'origin' , '-origin' , 'destination' , '-destination' , 'airline' , '-airline' , 'model' or '-model'.");
+				throw new BadRequestException("The order parameter must be 'origin' , '-origin' , 'destination' , '-destination' , 'originDate' , '-originDate', 'destinationDate', '-destinationDate', 'price', '-price', 'airline' , '-airline' , 'model' , '-model' , 'numMaxPassengers' or '-numMaxPassengers'.");
 			}
 		}
 		return result;
@@ -121,8 +139,16 @@ public class FlightResource {
 			throw new BadRequestException("The origin of the flight must contains letters and must not be null or empty");
 		} else if (flight.getDestination() == null || "".equals(flight.getDestination()) || !flight.getDestination().replace(" ", "").chars().allMatch(Character::isLetter)) {
 			throw new BadRequestException("The destination of the flight must contains letters and must not be null or empty");
+		} else if (flight.getOriginDate() == null || flight.getOriginDate() <= 0 || flight.getOriginDate() > 24) {
+			throw new BadRequestException("The originDate of the flight is not valid");
+		} else if (flight.getDestinationDate() == null || flight.getDestinationDate() <= 0 || flight.getDestinationDate() > 24) {
+			throw new BadRequestException("The destinationDate of the flight is not valid");
+		} else if (flight.getPrice() == null || flight.getPrice() <= 0) {
+			throw new BadRequestException("The price of the flight must be positive");
 		} else if (flight.getAirline() == null || "".equals(flight.getAirline()) || !flight.getDestination().replace(" ", "").chars().allMatch(Character::isLetter)) {
 			throw new BadRequestException("The airline of the flight must contains letters and must not be null or empty");
+		} else if (flight.getNumMaxPassengers() == null || flight.getNumMaxPassengers() < flight.getPassengers().size()) {
+			throw new BadRequestException("The max of seats must be over the existing passengers number");
 		}
 		
 		// Check if the flight exists on the repository
@@ -153,8 +179,16 @@ public class FlightResource {
 			throw new BadRequestException("The origin of the flight must contains letters and must not be null or empty");
 		} else if (flight.getDestination() == null || "".equals(flight.getDestination()) || !flight.getDestination().replace(" ", "").chars().allMatch(Character::isLetter)) {
 			throw new BadRequestException("The destination of the flight must contains letters and must not be null or empty");
+		} else if (flight.getOriginDate() == null || flight.getOriginDate() <= 0 || flight.getOriginDate() > 24) {
+			throw new BadRequestException("The originDate of the flight is not valid");
+		} else if (flight.getDestinationDate() == null || flight.getDestinationDate() <= 0 || flight.getDestinationDate() > 24) {
+			throw new BadRequestException("The destinationDate of the flight is not valid");
+		} else if (flight.getPrice() == null || flight.getPrice() <= 0) {
+			throw new BadRequestException("The price of the flight must be positive");
 		} else if (flight.getAirline() == null || "".equals(flight.getAirline()) || !flight.getDestination().replace(" ", "").chars().allMatch(Character::isLetter)) {
 			throw new BadRequestException("The airline of the flight must contains letters and must not be null or empty");
+		} else if (flight.getNumMaxPassengers() == null || flight.getNumMaxPassengers() < flight.getPassengers().size()) {
+			throw new BadRequestException("The max of seats must be over the existing passengers number");
 		}
 		
 		// Check if the flight exists on the repository
@@ -224,11 +258,14 @@ public class FlightResource {
 			throw new NotFoundException("The passenger to be added with the id = " + passengerId + " does not exist on the repository");
 		}
 		
-		//Check if the flight contains the passenger on the repository
+		// Check if the flight contains the passenger on the repository
 		if (repository.getAllPassengersFromAFlight(flightId).stream().anyMatch(x -> x.getId().equals(passengerId))) {
 			throw new NotFoundException("The passenger to be added with the id = " + passengerId + " is already on the flight with id = " + flightId);
-		} else if (repository.getAllFlights().stream().anyMatch(x -> !x.getId().equals(flightId) && x.getPassengers().contains(repository.getPassenger(passengerId)))) {
-			throw new NotFoundException("The passenger to be added with the id = " + passengerId + " is already on another flight");
+		}
+		
+		// Check if the numMaxPassengers is equal to the list size
+		if (repository.getFlight(flightId).getNumMaxPassengers() == repository.getFlight(flightId).getPassengers().size()) {
+			throw new NotFoundException("The flight with the id = " + flightId + " do not have any available seat");
 		}
 		
 		repository.addPassengerToAFlight(flightId, passengerId);		
