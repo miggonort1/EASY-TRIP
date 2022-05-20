@@ -25,7 +25,6 @@ public class EventResource {
 			System.err.println("Error when retrieving all events: " + cr.getResponse().getStatus());
 			throw re;
 		}
-		
 		return Arrays.asList(events);
 	}
 	
