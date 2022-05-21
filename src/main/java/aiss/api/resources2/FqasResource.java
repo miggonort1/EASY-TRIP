@@ -8,7 +8,7 @@ import org.restlet.resource.ResourceException;
 
 import aiss.model2.Fqas;
 
-public class FqasResource  {
+public class FqasResource {
 	
 	private String uri = "https://city-events-api.ew.r.appspot.com/api/fqas";
 
