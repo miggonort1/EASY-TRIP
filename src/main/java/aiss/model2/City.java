@@ -32,7 +32,16 @@ public class City {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("id")
+    public City(String name) {
+		this.name = name;
+	}
+    
+    public City(String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
+
+	@JsonProperty("id")
     public String getId() {
         return id;
     }

@@ -13,7 +13,7 @@ public class CityResource {
 	private String uri = "https://city-events-api.ew.r.appspot.com/api/cities";
 
 	
-	public Collection<City> getAll() {
+	public Collection<City> getCities() {
 		ClientResource cr = null;
 		City [] cities = null;
 		try {
@@ -98,7 +98,7 @@ public class CityResource {
 	}
 	
 
-	public boolean deleteSong(String cityId) {
+	public boolean deleteCity(String cityId) {
 		ClientResource cr = null;
 		boolean success = true;
 		try {

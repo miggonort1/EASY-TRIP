@@ -46,7 +46,18 @@ public class Event {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("id")
+    public Event(String id, String name, String description, String organizer, String category, String location, String date, String price) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.organizer = organizer;
+		this.category = category;
+		this.location = location;
+		this.date = date;
+		this.price = price;
+    }
+
+	@JsonProperty("id")
     public String getId() {
         return id;
     }
