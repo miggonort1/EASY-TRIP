@@ -1,98 +1,101 @@
 package aiss.model.resources;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.Assert.*;
 import java.util.Collection;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.restlet.resource.ResourceException;
 
-import aiss.model.Song;
+import aiss.api.resources2.FqasResource;
+import aiss.model2.Fqas;
 
 public class FqaResourceTest {
 
-	static Song song1, song2, song3;
-	static SongResource sr = new SongResource();
+	static Fqas fqa1, fqa2, fqa3, fqa4;
+	static FqasResource sr = new FqasResource();
 	
 	@BeforeClass
 	public static void setup() throws Exception {
 		
-		// Test song 1
-		song1 = sr.addSong(new Song("Test title","Test artist","Test album","2016"));
+		// Test fqa 1
+		fqa1 = sr.addFqa(new Fqas("id","question","answer"));
 		
-		// Test song 2
-		song2 = sr.addSong(new Song("Test title 2","Test artist 2","Test album 2","2017"));
 		
 	}
 
 	@AfterClass
 	public static void tearDown() throws Exception {
-		sr.deleteSong(song1.getId());
-		sr.deleteSong(song3.getId());
+		sr.deleteFqa(fqa1.getId());
+		sr.deleteFqa(fqa2.getId());
 	}
 	
 	@Test
 	public void testGetAll() {
-		Collection<Song> songs = sr.getAll();
+		Collection<Fqas> fqa = sr.getFqas();
 		
-		assertNotNull("The collection of songs is null", songs);
+		assertNotNull("The collection of fqas is null", fqa);
 		
 		// Show result
-		System.out.println("Listing all songs:");
+		System.out.println("Listing all fqas:");
 		int i=1;
-		for (Song s : songs) {
-			System.out.println("Song " + i++ + " : " + s.getTitle() + " (ID=" + s.getId() + ")");
+		for (Fqas f : fqa) {
+			System.out.println("Event " + i++ + " : " + f.getQuestion() +f.getAnswer()+" (ID=" + f.getId() + ")");
 		}
 	}
 
 	@Test
-	public void testGetSong() {
-		//TODO
+	public void testGetFqa() {
+		Fqas f = sr.getFqa(fqa1.getId());
+		
+		assertEquals("The id of the fqas do not match", fqa1.getId(), f.getId());
+		assertEquals("The name of the fqas do not match", fqa1.getQuestion(), f.getQuestion());
+		
+		// Show result
+		System.out.println("Fqa id: " +  f.getId());
+		System.out.println("Fqa question: " +  f.getQuestion());
+
 	}
 
 	@Test
-	public void testAddSong() {
+	public void testAddFqa() {
+		String fqaQuestion = "Add fqa test question";
+		String fqaAnswer = "Add fqa test answer";
 		
-		//TODO
+		
+		fqa4 = sr.addFqa(new Fqas(fqaQuestion,fqaAnswer));
+		
+		assertNotNull("Error when adding the fqa", fqa4);
+		assertEquals("The fqa's question has not been setted correctly", fqaQuestion, fqa4.getQuestion());
+		assertEquals("The fqa's answer has not been setted correctly", fqaAnswer, fqa4.getAnswer());
+	}
+
+	@Test
+	public void testUpdateFqa() {
+		String fqaQuestion = "Updated question";
+
+		// Update city
+		fqa1.setQuestion(fqaQuestion); 
+
+		boolean success = sr.updateFqa(fqa1);
+		
+		assertTrue("Error when updating the fqa", success);
+		
+		Fqas f  = sr.getFqa(fqa1.getId());
+		assertEquals("The fqa´s quesrtion has not been updated correctly", fqaQuestion, f.getQuestion());
 
 	}
 
 	@Test
-	public void testUpdateSong() {
+	public void testDeleteFqa() {
+		boolean success = sr.deleteFqa(fqa2.getId());
+		assertTrue("Error when deleting the fqa", success);
 		
-		String songTitle = "Update song test title";
-		String songArtist = "Update song test artist";
-		String songAlbum = "Update song test album";
-		String songYear = "1995";
-		
-		// Update song
-		song1.setTitle(songTitle);
-		song1.setArtist(songArtist);
-		song1.setAlbum(songAlbum);
-		song1.setYear(songYear);
-		
-		boolean success = sr.updateSong(song1);
-		
-		assertTrue("Error when updating the song", success);
-		
-		Song song  = sr.getSong(song1.getId());
-		assertEquals("The song's title has not been updated correctly", songTitle, song.getTitle());
-		assertEquals("The song's artist has not been updated correctly", songArtist, song.getArtist());
-		assertEquals("The song's album has not been updated correctly", songAlbum, song.getAlbum());
-		assertEquals("The song's year has not been updated correctly", songYear, song.getYear());
-	}
-
-	@Test(expected = ResourceException.class)
-	public void testDeleteSong() {
-		
-		// Delete songs
-		boolean success = sr.deleteSong(song2.getId());
-		
-		assertTrue("Error when deleting the song", success);
-		
-		Song song  = sr.getSong(song2.getId());
-		assertNull("The song has not been deleted correctly", song);
+		Fqas f = sr.getFqa(fqa2.getId());
+		assertNull("The fqa has not been deleted correctly", f);
 	}
 
 }

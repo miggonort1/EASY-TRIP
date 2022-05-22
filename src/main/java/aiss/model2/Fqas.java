@@ -28,7 +28,15 @@ public class Fqas {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("id")
+    public Fqas(String fqaQuestion, String fqaAnswer) {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Fqas(String string, String string2, String string3) {
+		// TODO Auto-generated constructor stub
+	}
+
+	@JsonProperty("id")
     public String getId() {
         return id;
     }
