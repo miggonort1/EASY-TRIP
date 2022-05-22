@@ -57,6 +57,11 @@ public class Event {
 		this.price = price;
     }
 
+	public Event(String eventName, String eventDescription, String eventOrganizer, String eventCategory,
+			String eventLocation, String eventDate, String eventPrice) {
+		// TODO Auto-generated constructor stub
+	}
+
 	@JsonProperty("id")
     public String getId() {
         return id;
