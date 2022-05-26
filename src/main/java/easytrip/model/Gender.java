@@ -1,4 +1,4 @@
-package aiss.model;
+package easytrip.model;
 
 public enum Gender {
  MAN, WOMAN, OTHER

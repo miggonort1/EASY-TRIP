@@ -1,12 +1,12 @@
-package aiss.api;
+package easytrip.api;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import aiss.api.resources.FlightResource;
-import aiss.api.resources.PassengerResource;
+import easytrip.api.resources.FlightResource;
+import easytrip.api.resources.PassengerResource;
 
 public class FlightApplication extends Application{
 	private Set<Object> singletons = new HashSet<Object>();

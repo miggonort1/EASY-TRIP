@@ -1,4 +1,4 @@
-package aiss.model;
+package easytrip.model;
 
 import java.util.Objects;
 
