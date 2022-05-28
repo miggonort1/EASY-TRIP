@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers: 
-  - url: 'https://easy-trip-350018.ew.r.appspot.com/api/v1' 
+  - url: 'https://easy-trip-350018.ew.r.appspot.com/' 
 info:
   description: EASY TRIP is an API REST Project made with Java, the purpose of this api is to facilitate the creation and use of flights and passengers.
   version: 1.0.0
@@ -77,12 +77,15 @@ paths:
                       type: string
                     surname:
                       type: string
-                    age:
+                    gender:
                       type: string
+                    age:
+                      type: integer
                   example:
                     id: p1
                     name: Roberto
                     surname: García Martínez
+                    gender: WOMAN
                     age: '23'
         '400':
           description: Bad request
@@ -101,6 +104,7 @@ paths:
                 - id
                 - name
                 - surname
+                - gender
                 - age
               properties:
                 id:
@@ -109,12 +113,15 @@ paths:
                   type: string
                 surname:
                   type: string
-                age:
+                gender: 
                   type: string
+                age:
+                  type: integer
               example:
                 id: p40
                 name: Alejandro
                 surname: Sayago Rico
+                gender: MAN
                 age: '33'
         description: Passenger to create
         required: true
@@ -134,12 +141,15 @@ paths:
                     type: string
                   surname:
                     type: string
-                  age:
+                  gender: 
                     type: string
+                  age:
+                    type: integer
                 example:
                   id: p40
                   name: Alejandro
                   surname: Sayago Rico
+                  gender: MAN
                   age: '33'
         '400':
           description: Bad request
@@ -157,6 +167,7 @@ paths:
                 - id
                 - name
                 - surname
+                - gender
                 - age
               properties:
                 id:
@@ -165,8 +176,10 @@ paths:
                   type: string
                 surname:
                   type: string
-                age:
+                gender:
                   type: string
+                age:
+                  type: integer
               example:
                 id: p5
                 name: Carlos
@@ -209,8 +222,10 @@ paths:
                     type: string
                   surname:
                     type: string
+                  gender:
+                    type: string
                   age:
-                    type: array
+                    type: integer
                 example:
                   id: p40
                   name: Carlos
@@ -246,19 +261,27 @@ paths:
       parameters:
         - name: order
           in: query
-          description: Order results by origin, destination, airlines or model
+          description: Order results by origin, originDate, destination, destinationDate, airlines, model or numMaxPassengers
           required: false
           schema:
             type: string
             enum:
               - origin
               - '-origin'
+              - originDate
+              - '-originDate'
               - destination
               - '-destination'
+              - destinationDate
+              - '-destinationDate'
+              - price
+              - '-price'
               - airline
               - '-airline'
               - model
               - '-model'
+              - numMaxPassengers
+              - '-numMaxPassengers'
         - name: isEmpty
           in: query
           description: Filter flights with no passengers
@@ -283,6 +306,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: price
+          in: query
+          description: Filter flights by price
+          required: false
+          schema:
+            type: number
       responses:
         '200':
           description: Search results matching criteria
@@ -301,10 +330,18 @@ paths:
                       type: string
                     destination:
                       type: string
+                    originDate:
+                      type: integer
+                    destinationDate:
+                      type: integer
+                    price: 
+                      type: number
                     airline:
                       type: string
                     model:
                       type: string
+                    numMaxPassengers:
+                      type: integer
                     passengers:
                       type: array
                       items:
@@ -318,18 +355,25 @@ paths:
                             type: string
                           surname:
                             type: string
-                          age:
+                          gender:
                             type: string
+                          age:
+                            type: integer
                   example:
                     id: f1
                     origin: Madrid  
                     destination: Barcelona
+                    originDate: 1
+                    destinationDate: 5
+                    price: 130.2
                     airline: Iberia
                     model: Airbus A330-300
+                    numMaxPassengers: 20
                     passangers:
                       - id: p1
                         name: Roberto
                         surname: García Martínez
+                        gender: WOMAN
                         age: '23'
         '400':
           description: Bad request
@@ -347,44 +391,63 @@ paths:
                 - id
                 - origin
                 - destination
+                - originDate
+                - destinationDate
+                - price
                 - airline
+                - numMaxPassengers
               properties:
-                id:
-                  type: string
-                origin:
-                  type: string
-                destination:
-                  type: string
-                airline:
-                  type: string
-                model:
-                  type: string
-                passengers:
-                  type: array
-                  items:
-                    type: object
-                    required:
-                      - name
-                    properties:
-                      id:
-                        type: string
-                      name:
-                        type: string
-                      surname:
-                        type: string
-                      age:
-                        type: string
+                    id:
+                      type: string
+                    origin:
+                      type: string
+                    destination:
+                      type: string
+                    originDate:
+                      type: integer
+                    destinationDate:
+                      type: integer
+                    price: 
+                      type: number
+                    airline:
+                      type: string
+                    model:
+                      type: string
+                    numMaxPassengers:
+                      type: integer
+                    passengers:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - name
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          surname:
+                            type: string
+                          gender:
+                            type: string
+                          age:
+                            type: integer
               example:
-                id: f1
-                origin: Barcelona
-                destination: Madrid 
-                airline: Iberia
-                model: Airbus A330-300
-                passengers:
-                  - id: p1
-                    name: Roberto
-                    surname: García Martínez 
-                    age: '23'
+                    id: f1
+                    origin: Valencia  
+                    destination: Barcelona
+                    originDate: 1
+                    destinationDate: 5
+                    price: 130.2
+                    airline: Iberia
+                    model: Airbus A330-300
+                    numMaxPassengers: 20
+                    passangers:
+                      - id: p1
+                        name: Roberto
+                        surname: García Martínez
+                        gender: WOMAN
+                        age: '23'
         description: Flight to update
       responses:
         '204':
@@ -407,44 +470,63 @@ paths:
                 - id
                 - origin
                 - destination
+                - originDate
+                - destinationDate
+                - price
                 - airline
+                - numMaxPassengers
               properties:
-                id:
-                  type: string
-                origin:
-                  type: string
-                destination:
-                  type: string
-                airline:
-                  type: string
-                model:
-                  type: string
-                passengers:
-                  type: array
-                  items:
-                    type: object
-                    required:
-                      - name
-                    properties:
-                      id:
-                        type: string
-                      name:
-                        type: string
-                      surname:
-                        type: string
-                      age:
-                        type: string
+                    id:
+                      type: string
+                    origin:
+                      type: string
+                    destination:
+                      type: string
+                    originDate:
+                      type: integer
+                    destinationDate:
+                      type: integer
+                    price: 
+                      type: number
+                    airline:
+                      type: string
+                    model:
+                      type: string
+                    numMaxPassengers:
+                      type: integer
+                    passengers:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - name
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          surname:
+                            type: string
+                          gender:
+                            type: string
+                          age:
+                            type: integer
               example:
-                id: f1
-                origin: Barcelona
-                destination: Madrid 
-                airline: Iberia
-                model: Airbus A330-300
-                passengers:
-                  - id: p1
-                    name: Roberto
-                    surname: García Martínez 
-                    age: '23'
+                    id: f8
+                    origin: Madrid  
+                    destination: Barcelona
+                    originDate: 3
+                    destinationDate: 5
+                    price: 130.2
+                    airline: Iberia
+                    model: Airbus A330-300
+                    numMaxPassengers: 20
+                    passangers:
+                      - id: p1
+                        name: Roberto
+                        surname: García Martínez
+                        gender: WOMAN
+                        age: '23'
         description: Flight to create
         required: true
       responses:
@@ -456,42 +538,57 @@ paths:
                 required:
                   - id
                 properties:
-                  id:
-                    type: string
-                  origin:
-                    type: string
-                  destination:
-                    type: string
-                  airline:
-                    type: string
-                  model:
-                    type: string
-                  passengers:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - name
-                      properties:
-                        id:
-                          type: string
-                        name: 
-                          type: string
-                        surname:
-                          type: string
-                        age:
-                          type: string
-                example:
-                  id: f1
-                  origin: Barcelona
-                  destination: Madrid 
-                  airline: Iberia
-                  model: Airbus A330-300
-                  passengers:
-                    - id: p1
-                      name: Roberto
-                      surname: García Martínez 
-                      age: '23'
+                    id:
+                      type: string
+                    origin:
+                      type: string
+                    destination:
+                      type: string
+                    originDate:
+                      type: integer
+                    destinationDate:
+                      type: integer
+                    price: 
+                      type: number
+                    airline:
+                      type: string
+                    model:
+                      type: string
+                    numMaxPassengers:
+                      type: integer
+                    passengers:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - name
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          surname:
+                            type: string
+                          gender:
+                            type: string
+                          age:
+                            type: integer
+              example:
+                    id: f8
+                    origin: Madrid  
+                    destination: Barcelona
+                    originDate: 3
+                    destinationDate: 5
+                    price: 130.2
+                    airline: Iberia
+                    model: Airbus A330-300
+                    numMaxPassengers: 20
+                    passangers:
+                      - id: p1
+                        name: Roberto
+                        surname: García Martínez
+                        gender: WOMAN
+                        age: '23'
         '400':
           description: Bad request
   '/flights/{flightId}':
@@ -517,42 +614,57 @@ paths:
                 required:
                   - id
                 properties:
-                  id:
-                    type: string
-                  origin:
-                    type: string
-                  destination:
-                    type: string
-                  airline:
-                    type: string
-                  model:
-                    type: string
-                  passengers:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - name
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        surname:
-                          type: string
-                        age:
-                          type: string
-                example:
-                  id: f2
-                  origin: Sevilla
-                  destination: Valencia
-                  airline: Vueling
-                  model: Airbus A320-214
-                  passengers:
-                    - id: p13
-                      name: María
-                      surname: Duarte Herrera
-                      age: '50'
+                    id:
+                      type: string
+                    origin:
+                      type: string
+                    destination:
+                      type: string
+                    originDate:
+                      type: integer
+                    destinationDate:
+                      type: integer
+                    price: 
+                      type: number
+                    airline:
+                      type: string
+                    model:
+                      type: string
+                    numMaxPassengers:
+                      type: integer
+                    passengers:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - name
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          surname:
+                            type: string
+                          gender:
+                            type: string
+                          age:
+                            type: integer
+              example:
+                    id: f1
+                    origin: Madrid  
+                    destination: Barcelona
+                    originDate: 1
+                    destinationDate: 5
+                    price: 130.2
+                    airline: Iberia
+                    model: Airbus A330-300
+                    numMaxPassengers: 20
+                    passangers:
+                      - id: p1
+                        name: Roberto
+                        surname: García Martínez
+                        gender: WOMAN
+                        age: '23'
         '404':
           description: Flight not found
     delete:
@@ -603,42 +715,57 @@ paths:
                 required:
                   - id
                 properties:
-                  id:
-                    type: string
-                  origin:
-                    type: string
-                  destination:
-                    type: string
-                  airline:
-                    type: string
-                  model:
-                    type: string
-                  passengers:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - name
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        surname:
-                          type: string
-                        age:
-                          type: string
-                example:
-                  id: f2
-                  origin: Sevilla
-                  destination: Valencia
-                  airline: Vueling
-                  model: Airbus A320-214
-                  passengers:
-                    - id: p13
-                      name: María
-                      surname: Duarte Herrera
-                      age: '50'
+                    id:
+                      type: string
+                    origin:
+                      type: string
+                    destination:
+                      type: string
+                    originDate:
+                      type: integer
+                    destinationDate:
+                      type: integer
+                    price: 
+                      type: number
+                    airline:
+                      type: string
+                    model:
+                      type: string
+                    numMaxPassengers:
+                      type: integer
+                    passengers:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - name
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          surname:
+                            type: string
+                          gender:
+                            type: string
+                          age:
+                            type: integer
+              example:
+                    id: f1
+                    origin: Madrid  
+                    destination: Barcelona
+                    originDate: 1
+                    destinationDate: 5
+                    price: 130.2
+                    airline: Iberia
+                    model: Airbus A330-300
+                    numMaxPassengers: 20
+                    passangers:
+                      - id: p1
+                        name: Roberto
+                        surname: García Martínez
+                        gender: WOMAN
+                        age: '23'
         '400':
           description: Bad request
         '404':
@@ -676,42 +803,57 @@ paths:
                 required:
                   - id
                 properties:
-                  id:
-                    type: string
-                  origin:
-                    type: string
-                  destination:
-                    type: string
-                  airline:
-                    type: string
-                  model:
-                    type: string
-                  passengers:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - name
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        surname:
-                          type: string
-                        age:
-                          type: string
-                example:
-                  id: f2
-                  origin: Sevilla
-                  destination: Valencia
-                  airline: Vueling
-                  model: Airbus A320-214
-                  passengers:
-                    - id: p13
-                      name: María
-                      surname: Duarte Herrera
-                      age: '50'
+                    id:
+                      type: string
+                    origin:
+                      type: string
+                    destination:
+                      type: string
+                    originDate:
+                      type: integer
+                    destinationDate:
+                      type: integer
+                    price: 
+                      type: number
+                    airline:
+                      type: string
+                    model:
+                      type: string
+                    numMaxPassengers:
+                      type: integer
+                    passengers:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - name
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          surname:
+                            type: string
+                          gender:
+                            type: string
+                          age:
+                            type: integer
+              example:
+                    id: f8
+                    origin: Madrid  
+                    destination: Barcelona
+                    originDate: 3
+                    destinationDate: 5
+                    price: 130.2
+                    airline: Iberia
+                    model: Airbus A330-300
+                    numMaxPassengers: 20
+                    passangers:
+                      - id: p1
+                        name: Roberto
+                        surname: García Martínez
+                        gender: WOMAN
+                        age: '23'
         '400':
           description: Bad request
         '404':
