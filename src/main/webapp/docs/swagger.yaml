@@ -10,7 +10,7 @@ info:
   license:
     name: Github Project
     url: 'https://github.com/miggonort1/EASY-TRIP'
-tags:
+tags: 
   - name: Passengers
     description: Passenger methods
   - name: Flights
