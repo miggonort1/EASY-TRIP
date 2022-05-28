@@ -1,4 +1,4 @@
-package aiss.api.resources;
+package easytrip.api.resources;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -25,10 +25,10 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.NotFoundException;
 
-import aiss.model.Flight;
-import aiss.model.Passenger;
-import aiss.model.repository.FlightRepository;
-import aiss.model.repository.MapFlightRepository;
+import easytrip.model.Flight;
+import easytrip.model.Passenger;
+import easytrip.model.repository.FlightRepository;
+import easytrip.model.repository.MapFlightRepository;
 
 @Path("/flights")
 public class FlightResource {

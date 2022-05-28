@@ -1,12 +1,12 @@
-package aiss.model.repository;
+package easytrip.model.repository;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import aiss.model.Flight;
-import aiss.model.Gender;
-import aiss.model.Passenger;
+import easytrip.model.Flight;
+import easytrip.model.Gender;
+import easytrip.model.Passenger;
 
 public class MapFlightRepository implements FlightRepository {
 
