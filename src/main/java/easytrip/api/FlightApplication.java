@@ -13,7 +13,6 @@ public class FlightApplication extends Application{
 	private Set<Class<?>> classes = new HashSet<Class<?>>();
 
 	public FlightApplication() {
-
 		singletons.add(FlightResource.getInstance());
 		singletons.add(PassengerResource.getInstance());
 	}
