@@ -12,8 +12,6 @@ public class FlightApplication extends Application{
 	private Set<Object> singletons = new HashSet<Object>();
 	private Set<Class<?>> classes = new HashSet<Class<?>>();
 
-	// Loads all resources that are implemented in the application
-	// so that they can be found by RESTEasy.
 	public FlightApplication() {
 
 		singletons.add(FlightResource.getInstance());
